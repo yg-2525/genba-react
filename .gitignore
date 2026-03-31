@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Reference files from river.go.jp
+river_*.js
+river_*.html

@@ -71,9 +71,9 @@ function App() {
       showToast('エクスポートするデータがありません', 'error')
       return
     }
-    let csv = '現場名,日付,作業内容,メモ,水位(m),流速(m/s),断面積(㎡),流量,比較メモ\n'
+    let csv = '現場名,日付,開始時間,終了時間,作業内容,メモ,水位(m),流速(m/s),断面積(㎡),流量,比較メモ\n'
     dataList.forEach(d => {
-      csv += `"${d.name}",${d.date},"${d.work}","${d.memo}",${d.waterLevel},${d.velocity},${d.area},${d.flow},"${d.compareNotes}"\n`
+      csv += `"${d.name}",${d.date},${d.startTime ?? ''},${d.endTime ?? ''},"${d.work}","${d.memo}",${d.waterLevel},${d.velocity},${d.area},${d.flow},"${d.compareNotes}"\n`
     })
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)

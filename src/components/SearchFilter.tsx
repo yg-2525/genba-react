@@ -29,12 +29,12 @@ export default function SearchFilter({
           onChange={e => onSearchName(e.target.value)}
         />
         <ResponsiveDateInput
-          label="開始日"
+          label="実施日(下限)"
           value={filterStartDate}
           onChange={onStartDate}
         />
         <ResponsiveDateInput
-          label="終了日"
+          label="実施日(上限)"
           value={filterEndDate}
           onChange={onEndDate}
         />

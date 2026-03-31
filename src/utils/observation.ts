@@ -1,5 +1,8 @@
+export type ObservationPointType = 'measured' | 'depthOnly' | 'pier'
+
 export type ObservationInputRow = {
   id: string
+  pointType: ObservationPointType
   distance: string
   depth: string
   count: string
@@ -15,11 +18,14 @@ export type CalculationSettings = {
 
 export type ObservationComputedRow = {
   id: string
+  pointType: ObservationPointType
+  distanceLabel: string
+  isPier: boolean
   distance: number
   depth: number
-  count: number
-  secondsAverage: number
-  pointVelocity: number
+  count: number | null
+  secondsAverage: number | null
+  pointVelocity: number | null
 }
 
 export type SectionSummary = {
@@ -56,6 +62,23 @@ function parseNumber(value: string) {
   return Number.isFinite(parsed) ? parsed : null
 }
 
+function parseDistance(value: string) {
+  const normalized = value.trim().toLowerCase()
+  if (!normalized) {
+    return { distance: null, isPier: false, distanceLabel: '' }
+  }
+  if (normalized === 'p') {
+    return { distance: null, isPier: true, distanceLabel: 'P' }
+  }
+
+  const parsed = Number(normalized)
+  if (!Number.isFinite(parsed)) {
+    return { distance: null, isPier: false, distanceLabel: '' }
+  }
+
+  return { distance: parsed, isPier: false, distanceLabel: parsed.toFixed(2) }
+}
+
 function calcSecondsAverage(seconds1: number | null, seconds2: number | null) {
   const values = [seconds1, seconds2].filter((value): value is number => value !== null)
   if (values.length === 0) {
@@ -75,6 +98,7 @@ export function calcPointVelocity(count: number, secondsAverage: number, setting
 export function createObservationRow(): ObservationInputRow {
   return {
     id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    pointType: 'measured',
     distance: '',
     depth: '',
     count: '',
@@ -83,37 +107,114 @@ export function createObservationRow(): ObservationInputRow {
   }
 }
 
+function resolveRowVelocity(rows: ObservationComputedRow[], targetIndex: number) {
+  const target = rows[targetIndex]
+  if (target.pointVelocity !== null) {
+    return target.pointVelocity
+  }
+
+  let prevIndex: number | null = null
+  for (let index = targetIndex - 1; index >= 0; index -= 1) {
+    if (rows[index].pointVelocity !== null) {
+      prevIndex = index
+      break
+    }
+  }
+
+  let nextIndex: number | null = null
+  for (let index = targetIndex + 1; index < rows.length; index += 1) {
+    if (rows[index].pointVelocity !== null) {
+      nextIndex = index
+      break
+    }
+  }
+
+  if (prevIndex !== null && nextIndex !== null) {
+    const prev = rows[prevIndex]
+    const next = rows[nextIndex]
+    if (next.distance === prev.distance) {
+      return prev.pointVelocity ?? 0
+    }
+
+    const ratio = (target.distance - prev.distance) / (next.distance - prev.distance)
+    const estimated = (prev.pointVelocity ?? 0) + ((next.pointVelocity ?? 0) - (prev.pointVelocity ?? 0)) * ratio
+    return round(estimated, 3)
+  }
+
+  if (prevIndex !== null) {
+    return rows[prevIndex].pointVelocity ?? 0
+  }
+
+  if (nextIndex !== null) {
+    return rows[nextIndex].pointVelocity ?? 0
+  }
+
+  return 0
+}
+
 export function calculateObservationSummary(
   inputRows: ObservationInputRow[],
   settings: CalculationSettings,
 ): ObservationSummary {
-  const rows = inputRows.flatMap(row => {
-    const distance = parseNumber(row.distance)
-    const depth = parseNumber(row.depth)
-    const count = parseNumber(row.count)
-    const secondsAverage = calcSecondsAverage(parseNumber(row.seconds1), parseNumber(row.seconds2))
+  let lastDistance = 0
+  const rows: ObservationComputedRow[] = []
 
-    if (distance === null || depth === null || count === null || secondsAverage === null) {
-      return []
+  inputRows.forEach(row => {
+    const parsedDistance = parseDistance(row.distance)
+    const depth = parseNumber(row.depth)
+
+    if (depth === null) {
+      return
     }
 
-    return [{
+    const normalizedDistance = parsedDistance.distance ?? (parsedDistance.isPier ? lastDistance : null)
+    if (normalizedDistance === null) {
+      return
+    }
+
+    lastDistance = normalizedDistance
+
+    if (row.pointType !== 'measured') {
+      rows.push({
+        id: row.id,
+        pointType: row.pointType,
+        distanceLabel: row.pointType === 'pier' ? 'P' : normalizedDistance.toFixed(2),
+        isPier: row.pointType === 'pier',
+        distance: normalizedDistance,
+        depth,
+        count: null,
+        secondsAverage: null,
+        pointVelocity: null,
+      })
+      return
+    }
+
+    const count = parseNumber(row.count)
+    const secondsAverage = calcSecondsAverage(parseNumber(row.seconds1), parseNumber(row.seconds2))
+    if (count === null || secondsAverage === null) {
+      return
+    }
+
+    rows.push({
       id: row.id,
-      distance,
+      pointType: row.pointType,
+      distanceLabel: normalizedDistance.toFixed(2),
+      isPier: false,
+      distance: normalizedDistance,
       depth,
       count,
       secondsAverage,
       pointVelocity: calcPointVelocity(count, secondsAverage, settings),
-    }]
+    })
   })
 
   const sections = rows.slice(0, -1).map((current, index) => {
     const next = rows[index + 1]
     const width = round(next.distance - current.distance, 2)
     const averageDepth = round((current.depth + next.depth) / 2, 2)
-    const averageVelocity = current.pointVelocity === 0
-      ? next.pointVelocity
-      : round((current.pointVelocity + next.pointVelocity) / 2, 3)
+    const currentVelocity = resolveRowVelocity(rows, index)
+    const nextVelocity = resolveRowVelocity(rows, index + 1)
+    const averageVelocity = round((currentVelocity + nextVelocity) / 2, 3)
     const area = round(width * averageDepth, 2)
     const flow = round(area * averageVelocity, 2)
 

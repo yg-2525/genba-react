@@ -141,9 +141,62 @@ textarea:focus {
   color: var(--text-h);
 }
 
+.result-panel {
+  margin: 0 0 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.result-panel h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: var(--text-h);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.result-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.result-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--accent-bg);
+}
+
+.result-card span {
+  font-size: 12px;
+  color: var(--text);
+}
+
+.result-card strong {
+  font-size: 20px;
+  color: var(--text-h);
+}
+
+.water-level-fetch {
+  align-self: end;
+  height: fit-content;
+}
+
 .observation-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) 110px;
+  grid-template-columns: minmax(130px, 1.4fr) repeat(5, minmax(0, 1fr)) 110px;
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
@@ -153,6 +206,10 @@ textarea:focus {
   font-size: 12px;
   color: var(--text);
   margin-bottom: 6px;
+}
+
+.observation-row-remove {
+  white-space: nowrap;
 }
 
 .calculator-actions {
@@ -457,6 +514,11 @@ button:hover {
 
   .observation-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .observation-row-remove {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .observation-grid-header {

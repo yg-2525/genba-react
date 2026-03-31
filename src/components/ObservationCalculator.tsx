@@ -4,6 +4,7 @@ import {
   createObservationRow,
   type CalculationSettings,
   type ObservationInputRow,
+  type ObservationPointType,
 } from '../utils/observation'
 
 type Props = {
@@ -34,6 +35,24 @@ export default function ObservationCalculator({ onApply }: Props) {
 
   function updateRow(id: string, key: keyof ObservationInputRow, value: string) {
     setRows(prev => prev.map(row => row.id === id ? { ...row, [key]: value } : row))
+  }
+
+  function updatePointType(id: string, pointType: ObservationPointType) {
+    setRows(prev => prev.map(row => {
+      if (row.id !== id) {
+        return row
+      }
+
+      const isMeasured = pointType === 'measured'
+      return {
+        ...row,
+        pointType,
+        distance: pointType === 'pier' ? 'P' : (row.distance.toLowerCase() === 'p' ? '' : row.distance),
+        count: isMeasured ? row.count : '',
+        seconds1: isMeasured ? row.seconds1 : '',
+        seconds2: isMeasured ? row.seconds2 : '',
+      }
+    }))
   }
 
   function removeRow(id: string) {
@@ -90,6 +109,7 @@ export default function ObservationCalculator({ onApply }: Props) {
       </div>
 
       <div className="observation-grid observation-grid-header">
+        <span>種別(V/H/P)</span>
         <span>距離(m)</span>
         <span>水深(m)</span>
         <span>音数</span>
@@ -100,12 +120,41 @@ export default function ObservationCalculator({ onApply }: Props) {
 
       {rows.map(row => (
         <div key={row.id} className="observation-grid">
-          <input type="number" step="any" value={row.distance} onChange={event => updateRow(row.id, 'distance', event.target.value)} />
+          <select value={row.pointType} onChange={event => updatePointType(row.id, event.target.value as ObservationPointType)}>
+            <option value="measured">V(音数・秒数)</option>
+            <option value="depthOnly">H(水深のみ)</option>
+            <option value="pier">P(ピア)</option>
+          </select>
+          <input
+            type="text"
+            value={row.distance}
+            placeholder={row.pointType === 'pier' ? 'P' : '距離'}
+            onChange={event => updateRow(row.id, 'distance', event.target.value)}
+            disabled={row.pointType === 'pier'}
+          />
           <input type="number" step="any" value={row.depth} onChange={event => updateRow(row.id, 'depth', event.target.value)} />
-          <input type="number" step="any" value={row.count} onChange={event => updateRow(row.id, 'count', event.target.value)} />
-          <input type="number" step="any" value={row.seconds1} onChange={event => updateRow(row.id, 'seconds1', event.target.value)} />
-          <input type="number" step="any" value={row.seconds2} onChange={event => updateRow(row.id, 'seconds2', event.target.value)} />
-          <button type="button" className="btn-secondary" onClick={() => removeRow(row.id)}>行削除</button>
+          <input
+            type="number"
+            step="any"
+            value={row.count}
+            onChange={event => updateRow(row.id, 'count', event.target.value)}
+            disabled={row.pointType !== 'measured'}
+          />
+          <input
+            type="number"
+            step="any"
+            value={row.seconds1}
+            onChange={event => updateRow(row.id, 'seconds1', event.target.value)}
+            disabled={row.pointType !== 'measured'}
+          />
+          <input
+            type="number"
+            step="any"
+            value={row.seconds2}
+            onChange={event => updateRow(row.id, 'seconds2', event.target.value)}
+            disabled={row.pointType !== 'measured'}
+          />
+          <button type="button" className="btn-secondary observation-row-remove" onClick={() => removeRow(row.id)}>行削除</button>
         </div>
       ))}
 
@@ -143,6 +192,7 @@ export default function ObservationCalculator({ onApply }: Props) {
           <table className="compare-table calc-table">
             <thead>
               <tr>
+                <th>種別</th>
                 <th>距離</th>
                 <th>水深</th>
                 <th>秒数平均</th>
@@ -152,10 +202,13 @@ export default function ObservationCalculator({ onApply }: Props) {
             <tbody>
               {summary.rows.map(row => (
                 <tr key={row.id}>
-                  <td>{row.distance.toFixed(2)}</td>
+                  <td>
+                    {row.pointType === 'measured' ? 'V' : row.pointType === 'depthOnly' ? 'H' : 'P'}
+                  </td>
+                  <td>{row.distanceLabel}</td>
                   <td>{row.depth.toFixed(2)}</td>
-                  <td>{row.secondsAverage.toFixed(2)}</td>
-                  <td>{row.pointVelocity.toFixed(3)}</td>
+                  <td>{row.secondsAverage === null ? '-' : row.secondsAverage.toFixed(2)}</td>
+                  <td>{row.pointVelocity === null ? '-' : row.pointVelocity.toFixed(3)}</td>
                 </tr>
               ))}
             </tbody>

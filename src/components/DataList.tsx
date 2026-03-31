@@ -44,8 +44,13 @@ export default function DataList({
               <div className="item-content">
                 <div><span className="item-label">現場:</span> {data.name}</div>
                 <div><span className="item-label">日付:</span> {formatDateForDisplay(data.date, isMobile)}</div>
-                <div><span className="item-label">作業:</span> {data.work}</div>
-                <div><span className="item-label">メモ:</span> {data.memo || '-'}</div>
+                {(data.startTime || data.endTime) && (
+                  <div>
+                    <span className="item-label">実施時間:</span> {data.startTime || '--:--'} - {data.endTime || '--:--'}
+                  </div>
+                )}
+                {data.work && <div><span className="item-label">作業:</span> {data.work}</div>}
+                {data.memo && <div><span className="item-label">メモ:</span> {data.memo}</div>}
                 <div>
                   <span className="item-label">観測値:</span>{' '}
                   水位:{data.waterLevel}m | 流速:{data.velocity}m/s | 面積:{data.area}㎡ | 流量:{data.flow}

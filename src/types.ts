@@ -6,6 +6,8 @@ export interface GembaData {
   id: number;
   name: string;
   date: string;
+  startTime?: string;
+  endTime?: string;
   work: string;
   memo: string;
   waterLevel: number;
