@@ -22,10 +22,10 @@ export default function ResponsiveDateInput({ label, value, onChange }: Props) {
   if (!isMobile) {
     return (
       <label className="date-field">
-        <span className="date-field-label">{label}</span>
+        {label && <span className="date-field-label">{label}</span>}
         <input
           type="date"
-          aria-label={label}
+          aria-label={label || '日付'}
           value={value}
           onChange={event => onChange(event.target.value)}
         />
@@ -35,10 +35,10 @@ export default function ResponsiveDateInput({ label, value, onChange }: Props) {
 
   return (
     <div className="date-field">
-      <span className="date-field-label">{label}</span>
+      {label && <span className="date-field-label">{label}</span>}
       <div className="date-selects">
         <select
-          aria-label={`${label} 年`}
+          aria-label={`${label || '日付'} 年`}
           value={year}
           onChange={event => handlePartChange(event.target.value, month, day)}
         >
@@ -48,7 +48,7 @@ export default function ResponsiveDateInput({ label, value, onChange }: Props) {
           ))}
         </select>
         <select
-          aria-label={`${label} 月`}
+          aria-label={`${label || '日付'} 月`}
           value={month}
           onChange={event => handlePartChange(year, event.target.value, day)}
         >
@@ -58,7 +58,7 @@ export default function ResponsiveDateInput({ label, value, onChange }: Props) {
           ))}
         </select>
         <select
-          aria-label={`${label} 日`}
+          aria-label={`${label || '日付'} 日`}
           value={day}
           onChange={event => handlePartChange(year, month, event.target.value)}
         >

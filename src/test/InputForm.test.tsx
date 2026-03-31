@@ -28,8 +28,8 @@ describe('InputForm', () => {
     renderInputForm(onAdd)
 
     await userEvent.type(screen.getByLabelText('現場名 *'), 'A川')
-    await userEvent.type(screen.getByLabelText('日付 *'), '2026-03-31')
-    await userEvent.type(screen.getByLabelText('水位を手入力（m）'), '1.5')
+    await userEvent.type(screen.getByLabelText('日付'), '2026-03-31')
+    await userEvent.type(screen.getByLabelText('開始水位（m）'), '1.5')
     await userEvent.type(screen.getByLabelText('流速（m/s）'), '2.0')
     await userEvent.type(screen.getByLabelText('断面積（㎡）'), '3.0')
 
@@ -47,8 +47,8 @@ describe('InputForm', () => {
 
     const nameInput = screen.getByLabelText('現場名 *')
     await userEvent.type(nameInput, 'テスト現場')
-    await userEvent.type(screen.getByLabelText('日付 *'), '2026-03-31')
-    await userEvent.type(screen.getByLabelText('水位を手入力（m）'), '1.5')
+    await userEvent.type(screen.getByLabelText('日付'), '2026-03-31')
+    await userEvent.type(screen.getByLabelText('開始水位（m）'), '1.5')
     await userEvent.type(screen.getByLabelText('流速（m/s）'), '2.0')
     await userEvent.type(screen.getByLabelText('断面積（㎡）'), '3.0')
 

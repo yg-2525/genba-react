@@ -98,53 +98,29 @@
 .time-wl-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.water-level-inline {
-  display: flex;
-  align-items: center;
   gap: 8px;
-  padding: 6px 10px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
 }
 
-.water-level-inline .water-level-label {
-  font-size: 11px;
-  color: var(--text);
-  white-space: nowrap;
-}
-
-.water-level-inline .water-level-value {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-h);
-}
-
-/* 水位セクション */
-.water-section {
-  margin-bottom: 16px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--accent-bg);
-}
-
-.water-section-header {
+/* 水位取得行 */
+.water-fetch-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-.water-section-header h3 {
-  margin: 0;
-  font-size: 16px;
-  color: var(--text-h);
+.water-avg-badge {
+  font-size: 14px;
+  color: var(--text);
+  padding: 6px 14px;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+}
+
+.water-avg-badge strong {
+  font-size: 18px;
+  color: var(--accent);
 }
 
 .btn-fetch {
@@ -194,38 +170,6 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* 平均水位表示 */
-.water-avg-row {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  margin-bottom: 12px;
-  padding: 10px 14px;
-  background: var(--bg);
-  border: 1px solid var(--accent);
-  border-radius: 8px;
-  max-width: 240px;
-}
-
-.water-avg-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.water-avg-unit {
-  font-size: 14px;
-  color: var(--text);
-}
-
-.water-manual-input {
-  max-width: 260px;
-}
-
-.water-manual-input input {
-  background: var(--bg);
 }
 
 input,
@@ -687,7 +631,7 @@ button:hover {
     grid-template-columns: 1fr;
   }
 
-  .water-section-header {
+  .water-fetch-row {
     flex-direction: column;
     align-items: stretch;
   }
@@ -696,10 +640,6 @@ button:hover {
     width: 100%;
     justify-content: center;
     padding: 12px 16px;
-  }
-
-  .water-manual-input {
-    max-width: none;
   }
 
   .result-grid {

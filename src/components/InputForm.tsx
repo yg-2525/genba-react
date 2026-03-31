@@ -4,14 +4,14 @@ import { useToast } from '../contexts/ToastContext'
 import ObservationCalculator from './ObservationCalculator'
 import ResponsiveDateInput from './ResponsiveDateInput'
 import { fetchAverageWaterLevelBySiteDateRange, fetchWaterLevelBySiteDate } from '../utils/waterLevel'
-import type { WaterLevelDetail } from '../utils/waterLevel'
 
 const emptyForm = {
   name: '',
   date: '',
   startTime: '',
   endTime: '',
-  waterLevel: '',
+  startWaterLevel: '',
+  endWaterLevel: '',
   velocity: '',
   area: '',
 }
@@ -23,8 +23,14 @@ type Props = {
 export default function InputForm({ onAdd }: Props) {
   const [form, setForm] = useState(emptyForm)
   const [isFetchingWaterLevel, setIsFetchingWaterLevel] = useState(false)
-  const [waterLevelDetail, setWaterLevelDetail] = useState<WaterLevelDetail | null>(null)
   const { showToast } = useToast()
+
+  const startWL = Number(form.startWaterLevel)
+  const endWL = Number(form.endWaterLevel)
+  const hasStartWL = form.startWaterLevel !== '' && Number.isFinite(startWL)
+  const hasEndWL = form.endWaterLevel !== '' && Number.isFinite(endWL)
+  const averageWaterLevel = hasStartWL && hasEndWL ? (startWL + endWL) / 2 : hasStartWL ? startWL : hasEndWL ? endWL : null
+
   const calculatedFlow = Number(form.velocity) * Number(form.area)
   const hasCalculatedFlow = !Number.isNaN(calculatedFlow) && Number.isFinite(calculatedFlow)
 
@@ -38,15 +44,15 @@ export default function InputForm({ onAdd }: Props) {
   }
 
   function handleSubmit() {
-    const { name, date, startTime, endTime, waterLevel, velocity, area } = form
+    const { name, date, startTime, endTime, velocity, area } = form
     if (!name || !date) {
       showToast('現場名と日付は必須です', 'error')
       return
     }
-    const wl = Number(waterLevel)
+    const wl = averageWaterLevel ?? 0
     const vel = Number(velocity)
     const ar = Number(area)
-    if (isNaN(wl) || isNaN(vel) || isNaN(ar)) {
+    if (isNaN(vel) || isNaN(ar)) {
       showToast('観測データは数値で入力してください', 'error')
       return
     }
@@ -65,7 +71,6 @@ export default function InputForm({ onAdd }: Props) {
       compareNotes: '',
     })
     setForm(emptyForm)
-    setWaterLevelDetail(null)
   }
 
   async function handleFetchWaterLevel() {
@@ -78,13 +83,19 @@ export default function InputForm({ onAdd }: Props) {
     try {
       if (form.startTime && form.endTime) {
         const detail = await fetchAverageWaterLevelBySiteDateRange(form.name, form.date, form.startTime, form.endTime)
-        setWaterLevelDetail(detail)
-        setForm(prev => ({ ...prev, waterLevel: detail.average.toFixed(2) }))
-        showToast('水位を取得しました（開始・終了・平均）', 'success')
+        setForm(prev => ({
+          ...prev,
+          startWaterLevel: detail.startLevel != null ? detail.startLevel.toFixed(2) : prev.startWaterLevel,
+          endWaterLevel: detail.endLevel != null ? detail.endLevel.toFixed(2) : prev.endWaterLevel,
+        }))
+        showToast('水位を取得しました', 'success')
       } else {
         const waterLevel = await fetchWaterLevelBySiteDate(form.name, form.date)
-        setWaterLevelDetail(null)
-        setForm(prev => ({ ...prev, waterLevel: waterLevel.toFixed(2) }))
+        setForm(prev => ({
+          ...prev,
+          startWaterLevel: waterLevel.toFixed(2),
+          endWaterLevel: waterLevel.toFixed(2),
+        }))
         showToast('水位を取得しました', 'success')
       }
     } catch (error) {
@@ -112,11 +123,13 @@ export default function InputForm({ onAdd }: Props) {
             <label htmlFor="field-name">現場名 *</label>
           </div>
           <ResponsiveDateInput
-            label="日付 *"
+            label=""
             value={form.date}
             onChange={value => setForm({ ...form, date: value })}
           />
         </div>
+
+        {/* 開始時間+水位 / 終了時間+水位 */}
         <div className="input-row-2col">
           <div className="time-wl-group">
             <div className="floating-field">
@@ -129,14 +142,17 @@ export default function InputForm({ onAdd }: Props) {
               />
               <label htmlFor="field-start">開始時間</label>
             </div>
-            {form.startTime && form.endTime && (
-              <div className="water-level-inline">
-                <span className="water-level-label">開始水位</span>
-                <span className="water-level-value">
-                  {waterLevelDetail?.startLevel != null ? waterLevelDetail.startLevel.toFixed(2) : '--'}
-                </span>
-              </div>
-            )}
+            <div className="floating-field">
+              <input
+                id="field-start-wl"
+                type="number"
+                step="any"
+                placeholder=" "
+                value={form.startWaterLevel}
+                onChange={e => setForm({ ...form, startWaterLevel: e.target.value })}
+              />
+              <label htmlFor="field-start-wl">開始水位（m）</label>
+            </div>
           </div>
           <div className="time-wl-group">
             <div className="floating-field">
@@ -149,22 +165,22 @@ export default function InputForm({ onAdd }: Props) {
               />
               <label htmlFor="field-end">終了時間</label>
             </div>
-            {form.startTime && form.endTime && (
-              <div className="water-level-inline">
-                <span className="water-level-label">終了水位</span>
-                <span className="water-level-value">
-                  {waterLevelDetail?.endLevel != null ? waterLevelDetail.endLevel.toFixed(2) : '--'}
-                </span>
-              </div>
-            )}
+            <div className="floating-field">
+              <input
+                id="field-end-wl"
+                type="number"
+                step="any"
+                placeholder=" "
+                value={form.endWaterLevel}
+                onChange={e => setForm({ ...form, endWaterLevel: e.target.value })}
+              />
+              <label htmlFor="field-end-wl">終了水位（m）</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* 水位セクション */}
-      <div className="water-section">
-        <div className="water-section-header">
-          <h3>{form.startTime && form.endTime ? '平均水位（m）' : '水位（m）'}</h3>
+        {/* 水位取得ボタン + 平均水位 */}
+        <div className="water-fetch-row">
           <button
             type="button"
             className="btn-fetch"
@@ -177,23 +193,11 @@ export default function InputForm({ onAdd }: Props) {
               <><span className="fetch-icon">🌊</span> 国交省から水位取得</>
             )}
           </button>
-        </div>
-
-        <div className="water-avg-row">
-          <span className="water-avg-value">{form.waterLevel || '--'}</span>
-          <span className="water-avg-unit">m</span>
-        </div>
-
-        <div className="floating-field water-manual-input">
-          <input
-            id="field-wl"
-            type="number"
-            step="any"
-            placeholder=" "
-            value={form.waterLevel}
-            onChange={e => { setForm({ ...form, waterLevel: e.target.value }); setWaterLevelDetail(null) }}
-          />
-          <label htmlFor="field-wl">水位を手入力（m）</label>
+          {averageWaterLevel != null && (
+            <span className="water-avg-badge">
+              平均水位: <strong>{averageWaterLevel.toFixed(2)}</strong> m
+            </span>
+          )}
         </div>
       </div>
 
