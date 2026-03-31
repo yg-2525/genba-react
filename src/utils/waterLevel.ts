@@ -25,7 +25,15 @@ type RiverLevelResponse = {
   }
 }
 
-const WATER_LEVEL_SOURCE_URL = (import.meta.env.VITE_WATER_LEVEL_SOURCE_URL ?? 'https://www.river.go.jp').trim()
+const WATER_LEVEL_SOURCE_URL = (() => {
+  const envUrl = (import.meta.env.VITE_WATER_LEVEL_SOURCE_URL ?? '').trim()
+  if (envUrl) return envUrl
+  // 開発環境では Vite プロキシ（/river-api → river.go.jp）を使用
+  if (import.meta.env.DEV) return '/river-api'
+  // 本番では直接アクセス（CORS で失敗する場合は VITE_WATER_LEVEL_SOURCE_URL に
+  // Cloudflare Worker 等のプロキシ URL を設定する）
+  return 'https://www.river.go.jp'
+})()
 const WATER_LEVEL_API_URL = (import.meta.env.VITE_WATER_LEVEL_API_URL ?? '').trim()
 const USE_DIRECT_RIVER_API = (import.meta.env.VITE_WATER_LEVEL_USE_DIRECT ?? 'true').toLowerCase() === 'true'
 

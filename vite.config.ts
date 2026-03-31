@@ -5,6 +5,15 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/genba-react/',
   plugins: [react()],
+  server: {
+    proxy: {
+      '/river-api': {
+        target: 'https://www.river.go.jp',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/river-api/, ''),
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
