@@ -94,7 +94,36 @@
   color: var(--accent);
 }
 
-/* ===== 水位セクション ===== */
+/* 時間+水位グループ */
+.time-wl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.water-level-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.water-level-inline .water-level-label {
+  font-size: 11px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.water-level-inline .water-level-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+/* 水位セクション */
 .water-section {
   margin-bottom: 16px;
   padding: 16px;
@@ -167,51 +196,28 @@
   to { transform: rotate(360deg); }
 }
 
-/* 水位表示グリッド */
-.water-level-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.water-level-item {
+/* 平均水位表示 */
+.water-avg-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: baseline;
   gap: 4px;
-  padding: 10px 8px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
   background: var(--bg);
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent);
   border-radius: 8px;
-}
-
-.water-level-item.water-level-single {
-  grid-column: 1 / -1;
   max-width: 240px;
-  margin: 0 auto;
-  width: 100%;
 }
 
-.water-level-item.water-level-primary {
-  border-color: var(--accent);
-  background: #eff6ff;
-}
-
-.water-level-label {
-  font-size: 11px;
-  color: var(--text);
-  font-weight: 500;
-}
-
-.water-level-value {
-  font-size: 22px;
+.water-avg-value {
+  font-size: 28px;
   font-weight: 700;
-  color: var(--text-h);
+  color: var(--accent);
 }
 
-.water-level-primary .water-level-value {
-  color: var(--accent);
+.water-avg-unit {
+  font-size: 14px;
+  color: var(--text);
 }
 
 .water-manual-input {
@@ -379,7 +385,7 @@ textarea:focus {
 
 .observation-grid {
   display: grid;
-  grid-template-columns: minmax(130px, 1.4fr) repeat(5, minmax(0, 1fr)) 110px;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) 80px;
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
@@ -690,14 +696,6 @@ button:hover {
     width: 100%;
     justify-content: center;
     padding: 12px 16px;
-  }
-
-  .water-level-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .water-level-item.water-level-single {
-    max-width: none;
   }
 
   .water-manual-input {

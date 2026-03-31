@@ -2,7 +2,6 @@ export type ObservationPointType = 'measured' | 'depthOnly' | 'pier'
 
 export type ObservationInputRow = {
   id: string
-  pointType: ObservationPointType
   distance: string
   depth: string
   count: string
@@ -98,13 +97,21 @@ export function calcPointVelocity(count: number, secondsAverage: number, setting
 export function createObservationRow(): ObservationInputRow {
   return {
     id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    pointType: 'measured',
     distance: '',
     depth: '',
     count: '',
     seconds1: '',
     seconds2: '',
   }
+}
+
+function inferPointType(row: ObservationInputRow): ObservationPointType {
+  const dist = row.distance.trim().toLowerCase()
+  if (dist === 'p') return 'pier'
+  const hasCount = row.count.trim() !== ''
+  const hasSeconds = row.seconds1.trim() !== '' || row.seconds2.trim() !== ''
+  if (!hasCount && !hasSeconds) return 'depthOnly'
+  return 'measured'
 }
 
 function resolveRowVelocity(rows: ObservationComputedRow[], targetIndex: number) {
@@ -174,12 +181,14 @@ export function calculateObservationSummary(
 
     lastDistance = normalizedDistance
 
-    if (row.pointType !== 'measured') {
+    const pointType = inferPointType(row)
+
+    if (pointType !== 'measured') {
       rows.push({
         id: row.id,
-        pointType: row.pointType,
-        distanceLabel: row.pointType === 'pier' ? 'P' : normalizedDistance.toFixed(2),
-        isPier: row.pointType === 'pier',
+        pointType,
+        distanceLabel: pointType === 'pier' ? 'P' : normalizedDistance.toFixed(2),
+        isPier: pointType === 'pier',
         distance: normalizedDistance,
         depth,
         count: null,
@@ -197,7 +206,7 @@ export function calculateObservationSummary(
 
     rows.push({
       id: row.id,
-      pointType: row.pointType,
+      pointType: 'measured',
       distanceLabel: normalizedDistance.toFixed(2),
       isPier: false,
       distance: normalizedDistance,

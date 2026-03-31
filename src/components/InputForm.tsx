@@ -118,25 +118,45 @@ export default function InputForm({ onAdd }: Props) {
           />
         </div>
         <div className="input-row-2col">
-          <div className="floating-field">
-            <input
-              id="field-start"
-              type="time"
-              placeholder=" "
-              value={form.startTime}
-              onChange={e => setForm({ ...form, startTime: e.target.value })}
-            />
-            <label htmlFor="field-start">開始時間</label>
+          <div className="time-wl-group">
+            <div className="floating-field">
+              <input
+                id="field-start"
+                type="time"
+                placeholder=" "
+                value={form.startTime}
+                onChange={e => setForm({ ...form, startTime: e.target.value })}
+              />
+              <label htmlFor="field-start">開始時間</label>
+            </div>
+            {form.startTime && form.endTime && (
+              <div className="water-level-inline">
+                <span className="water-level-label">開始水位</span>
+                <span className="water-level-value">
+                  {waterLevelDetail?.startLevel != null ? waterLevelDetail.startLevel.toFixed(2) : '--'}
+                </span>
+              </div>
+            )}
           </div>
-          <div className="floating-field">
-            <input
-              id="field-end"
-              type="time"
-              placeholder=" "
-              value={form.endTime}
-              onChange={e => setForm({ ...form, endTime: e.target.value })}
-            />
-            <label htmlFor="field-end">終了時間</label>
+          <div className="time-wl-group">
+            <div className="floating-field">
+              <input
+                id="field-end"
+                type="time"
+                placeholder=" "
+                value={form.endTime}
+                onChange={e => setForm({ ...form, endTime: e.target.value })}
+              />
+              <label htmlFor="field-end">終了時間</label>
+            </div>
+            {form.startTime && form.endTime && (
+              <div className="water-level-inline">
+                <span className="water-level-label">終了水位</span>
+                <span className="water-level-value">
+                  {waterLevelDetail?.endLevel != null ? waterLevelDetail.endLevel.toFixed(2) : '--'}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -144,7 +164,7 @@ export default function InputForm({ onAdd }: Props) {
       {/* 水位セクション */}
       <div className="water-section">
         <div className="water-section-header">
-          <h3>水位（m）</h3>
+          <h3>{form.startTime && form.endTime ? '平均水位（m）' : '水位（m）'}</h3>
           <button
             type="button"
             className="btn-fetch"
@@ -159,36 +179,9 @@ export default function InputForm({ onAdd }: Props) {
           </button>
         </div>
 
-        <div className="water-level-grid">
-          {form.startTime && form.endTime ? (
-            <>
-              <div className="water-level-item">
-                <span className="water-level-label">開始水位</span>
-                <span className="water-level-value">
-                  {waterLevelDetail?.startLevel != null ? waterLevelDetail.startLevel.toFixed(2) : '--'}
-                </span>
-              </div>
-              <div className="water-level-item">
-                <span className="water-level-label">終了水位</span>
-                <span className="water-level-value">
-                  {waterLevelDetail?.endLevel != null ? waterLevelDetail.endLevel.toFixed(2) : '--'}
-                </span>
-              </div>
-              <div className="water-level-item water-level-primary">
-                <span className="water-level-label">平均水位</span>
-                <span className="water-level-value">
-                  {form.waterLevel || '--'}
-                </span>
-              </div>
-            </>
-          ) : (
-            <div className="water-level-item water-level-primary water-level-single">
-              <span className="water-level-label">水位</span>
-              <span className="water-level-value">
-                {form.waterLevel || '--'}
-              </span>
-            </div>
-          )}
+        <div className="water-avg-row">
+          <span className="water-avg-value">{form.waterLevel || '--'}</span>
+          <span className="water-avg-unit">m</span>
         </div>
 
         <div className="floating-field water-manual-input">
