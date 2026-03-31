@@ -2,6 +2,12 @@ type WaterLevelApiResponse = {
   waterLevel: number | string
 }
 
+export type WaterLevelDetail = {
+  startLevel: number | null
+  endLevel: number | null
+  average: number
+}
+
 type RiverSearchItem = {
   ofcCd: string | number
   itmkndCd: string | number
@@ -229,7 +235,7 @@ export async function fetchAverageWaterLevelBySiteDateRange(
   date: string,
   startTime: string,
   endTime: string,
-) {
+): Promise<WaterLevelDetail> {
   const dateKey = getDateKey(date)
   if (!dateKey) {
     throw new Error('日付の形式が不正です。YYYY-MM-DD 形式で指定してください')
@@ -253,7 +259,12 @@ export async function fetchAverageWaterLevelBySiteDateRange(
     }
 
     if (values.length > 0) {
-      return values.reduce((sum, value) => sum + value, 0) / values.length
+      const average = values.reduce((sum, value) => sum + value, 0) / values.length
+      return {
+        startLevel: values[0],
+        endLevel: values[values.length - 1],
+        average,
+      }
     }
 
     if (!WATER_LEVEL_API_URL) {
@@ -283,7 +294,7 @@ export async function fetchAverageWaterLevelBySiteDateRange(
     throw new Error('水位取得APIのレスポンス形式が不正です。waterLevel を返す必要があります。')
   }
 
-  return waterLevel
+  return { startLevel: null, endLevel: null, average: waterLevel }
 }
 
 export async function fetchWaterLevelBySiteDate(siteName: string, dateTime: string) {

@@ -38,6 +38,190 @@
   margin-bottom: 16px;
 }
 
+/* ===== 入力セクション ===== */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.input-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ===== フローティングラベル ===== */
+.floating-field {
+  position: relative;
+}
+
+.floating-field input {
+  width: 100%;
+  padding: 18px 12px 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.floating-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.floating-field label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--text);
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.floating-field input:focus + label,
+.floating-field input:not(:placeholder-shown) + label {
+  top: 6px;
+  transform: translateY(0);
+  font-size: 10px;
+  color: var(--accent);
+}
+
+/* ===== 水位セクション ===== */
+.water-section {
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--accent-bg);
+}
+
+.water-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.water-section-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-h);
+}
+
+.btn-fetch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  white-space: nowrap;
+}
+
+.btn-fetch:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.btn-fetch:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-fetch:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.fetch-icon {
+  font-size: 16px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 水位表示グリッド */
+.water-level-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.water-level-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.water-level-item.water-level-single {
+  grid-column: 1 / -1;
+  max-width: 240px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.water-level-item.water-level-primary {
+  border-color: var(--accent);
+  background: #eff6ff;
+}
+
+.water-level-label {
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.water-level-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.water-level-primary .water-level-value {
+  color: var(--accent);
+}
+
+.water-manual-input {
+  max-width: 260px;
+}
+
+.water-manual-input input {
+  background: var(--bg);
+}
+
 input,
 select,
 textarea {
@@ -169,6 +353,10 @@ textarea:focus {
   color: var(--text);
 }
 
+.result-grid .floating-field {
+  min-width: 0;
+}
+
 .result-card {
   display: flex;
   flex-direction: column;
@@ -187,11 +375,6 @@ textarea:focus {
 .result-card strong {
   font-size: 20px;
   color: var(--text-h);
-}
-
-.water-level-fetch {
-  align-self: end;
-  height: fit-content;
 }
 
 .observation-grid {
@@ -491,6 +674,37 @@ button:hover {
   }
 
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .input-row-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .water-section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-fetch {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+
+  .water-level-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .water-level-item.water-level-single {
+    max-width: none;
+  }
+
+  .water-manual-input {
+    max-width: none;
+  }
+
+  .result-grid {
     grid-template-columns: 1fr;
   }
 
