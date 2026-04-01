@@ -30,7 +30,8 @@ export default function InputForm({ onAdd }: Props) {
   const endWL = Number(form.endWaterLevel)
   const hasStartWL = form.startWaterLevel !== '' && Number.isFinite(startWL)
   const hasEndWL = form.endWaterLevel !== '' && Number.isFinite(endWL)
-  const averageWaterLevel = hasStartWL && hasEndWL ? (startWL + endWL) / 2 : hasStartWL ? startWL : hasEndWL ? endWL : null
+  const rawAverage = hasStartWL && hasEndWL ? (startWL + endWL) / 2 : hasStartWL ? startWL : hasEndWL ? endWL : null
+  const averageWaterLevel = rawAverage != null ? Math.ceil(rawAverage * 100) / 100 : null
 
   const calculatedFlow = Number(form.velocity) * Number(form.area)
   const hasCalculatedFlow = !Number.isNaN(calculatedFlow) && Number.isFinite(calculatedFlow)
