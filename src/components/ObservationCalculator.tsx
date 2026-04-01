@@ -61,7 +61,7 @@ export default function ObservationCalculator({ onApply }: Props) {
             value={settings.coefficient}
             onChange={event => setSettings(prev => ({ ...prev, coefficient: event.target.value }))}
           />
-          <label htmlFor="setting-coeff">検定係数 a</label>
+          <label htmlFor="setting-coeff">検定係数</label>
         </div>
         <div className={`floating-field${settings.offset ? ' filled' : ''}`}>
           <input
@@ -72,7 +72,7 @@ export default function ObservationCalculator({ onApply }: Props) {
             value={settings.offset}
             onChange={event => setSettings(prev => ({ ...prev, offset: event.target.value }))}
           />
-          <label htmlFor="setting-offset">補正値 b</label>
+          <label htmlFor="setting-offset">補正値</label>
         </div>
         <div className={`floating-field${settings.pulseFactor ? ' filled' : ''}`}>
           <input
@@ -83,7 +83,7 @@ export default function ObservationCalculator({ onApply }: Props) {
             value={settings.pulseFactor}
             onChange={event => setSettings(prev => ({ ...prev, pulseFactor: event.target.value }))}
           />
-          <label htmlFor="setting-pulse">1回転あたり音数</label>
+          <label htmlFor="setting-pulse">音数</label>
         </div>
       </div>
 
