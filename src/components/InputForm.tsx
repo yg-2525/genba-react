@@ -100,7 +100,9 @@ export default function InputForm({ onAdd }: Props) {
         showToast('水位を取得しました', 'success')
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : '水位の取得に失敗しました'
+      const safeMessages = ['水位データが見つかりません', '観測所が見つかりません', '現場名と日付を入力してから水位を取得してください']
+      const raw = error instanceof Error ? error.message : ''
+      const message = safeMessages.find(m => raw.includes(m)) ?? '水位の取得に失敗しました'
       showToast(message, 'error')
     } finally {
       setIsFetchingWaterLevel(false)

@@ -10,12 +10,27 @@ import CompareModal from './components/CompareModal'
 import { useToast } from './contexts/ToastContext'
 import './App.css'
 
+function isGembaData(v: unknown): v is GembaData {
+  if (typeof v !== 'object' || v === null) return false
+  const o = v as Record<string, unknown>
+  return typeof o.id === 'number' && typeof o.name === 'string' && typeof o.date === 'string' && typeof o.flow === 'string'
+}
+
+function loadSavedData(): GembaData[] {
+  try {
+    const saved = localStorage.getItem('genbaData')
+    if (!saved) return []
+    const parsed: unknown = JSON.parse(saved)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter(isGembaData)
+  } catch {
+    return []
+  }
+}
+
 function App() {
   const { showToast } = useToast()
-  const [dataList, setDataList] = useState<GembaData[]>(() => {
-    const saved = localStorage.getItem('genbaData')
-    return saved ? (JSON.parse(saved) as GembaData[]) : []
-  })
+  const [dataList, setDataList] = useState<GembaData[]>(loadSavedData)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [compareFirst, setCompareFirst] = useState<number | null>(null)
   const [compareResult, setCompareResult] = useState<{ data1: GembaData; data2: GembaData } | null>(null)
