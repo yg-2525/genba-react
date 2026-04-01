@@ -132,7 +132,7 @@ export default function InputForm({ onAdd }: Props) {
         {/* 開始時間+水位 / 終了時間+水位 */}
         <div className="input-row-2col">
           <div className="time-wl-group">
-            <div className="floating-field">
+            <div className={`floating-field${form.startTime ? ' filled' : ''}`}>
               <input
                 id="field-start"
                 type="time"
@@ -142,7 +142,7 @@ export default function InputForm({ onAdd }: Props) {
               />
               <label htmlFor="field-start">開始時間</label>
             </div>
-            <div className="floating-field">
+            <div className={`floating-field${form.startWaterLevel ? ' filled' : ''}`}>
               <input
                 id="field-start-wl"
                 type="number"
@@ -155,7 +155,7 @@ export default function InputForm({ onAdd }: Props) {
             </div>
           </div>
           <div className="time-wl-group">
-            <div className="floating-field">
+            <div className={`floating-field${form.endTime ? ' filled' : ''}`}>
               <input
                 id="field-end"
                 type="time"
@@ -165,7 +165,7 @@ export default function InputForm({ onAdd }: Props) {
               />
               <label htmlFor="field-end">終了時間</label>
             </div>
-            <div className="floating-field">
+            <div className={`floating-field${form.endWaterLevel ? ' filled' : ''}`}>
               <input
                 id="field-end-wl"
                 type="number"
@@ -207,7 +207,7 @@ export default function InputForm({ onAdd }: Props) {
       <div className="result-panel">
         <h3>計算結果</h3>
         <div className="result-grid">
-          <div className="floating-field">
+          <div className={`floating-field${form.velocity ? ' filled' : ''}`}>
             <input
               id="field-vel"
               type="number"
@@ -218,7 +218,7 @@ export default function InputForm({ onAdd }: Props) {
             />
             <label htmlFor="field-vel">流速（m/s）</label>
           </div>
-          <div className="floating-field">
+          <div className={`floating-field${form.area ? ' filled' : ''}`}>
             <input
               id="field-area"
               type="number"

@@ -94,6 +94,15 @@
   color: var(--accent);
 }
 
+/* 値が入力済みのときラベルを非表示 & パディング調整 */
+.floating-field.filled label {
+  display: none;
+}
+
+.floating-field.filled input {
+  padding: 12px;
+}
+
 /* 時間+水位グループ */
 .time-wl-group {
   display: flex;
