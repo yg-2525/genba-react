@@ -224,9 +224,6 @@ export function calculateObservationSummary(
 
   const sections = rows.slice(0, -1).map((current, index) => {
     const next = rows[index + 1]
-    if (current.pointType === 'depthOnly' || next.pointType === 'depthOnly') {
-      return null
-    }
     const width = round(next.distance - current.distance, 2)
     const averageDepth = round((current.depth + next.depth) / 2, 2)
     const currentVelocity = resolveRowVelocity(rows, index)
@@ -245,7 +242,7 @@ export function calculateObservationSummary(
       area,
       flow,
     }
-  }).filter((section): section is SectionSummary => section !== null && section.width >= 0)
+  }).filter(section => section.width >= 0)
 
   const totalArea = round(sections.reduce((sum, section) => sum + section.area, 0), 2)
   const totalFlow = round(sections.reduce((sum, section) => sum + section.flow, 0), 2)

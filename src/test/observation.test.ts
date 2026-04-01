@@ -58,6 +58,6 @@ describe('observation calculator', () => {
 
     expect(summary.rows).toHaveLength(4)
     expect(summary.rows[2].distanceLabel).toBe('P')
-    expect(summary.sections.every(section => section.width > 0)).toBe(true)
+    expect(summary.sections.some(section => section.width === 0)).toBe(true)
   })
 })
