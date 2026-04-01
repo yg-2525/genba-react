@@ -136,6 +136,7 @@ export default function InputForm({ onAdd }: Props) {
               <input
                 id="field-start"
                 type="time"
+                step="600"
                 placeholder=" "
                 value={form.startTime}
                 onChange={e => setForm({ ...form, startTime: e.target.value })}
@@ -159,6 +160,7 @@ export default function InputForm({ onAdd }: Props) {
               <input
                 id="field-end"
                 type="time"
+                step="600"
                 placeholder=" "
                 value={form.endTime}
                 onChange={e => setForm({ ...form, endTime: e.target.value })}
