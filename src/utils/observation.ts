@@ -48,7 +48,7 @@ export type ObservationSummary = {
 
 function round(value: number, digits: number) {
   const factor = 10 ** digits
-  return Math.round(value * factor) / factor
+  return Math.ceil(value * factor) / factor
 }
 
 function parseNumber(value: string) {
