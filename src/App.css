@@ -682,7 +682,8 @@ button:hover {
   }
 
   .observation-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
   }
 
   .observation-row-remove {
@@ -692,6 +693,14 @@ button:hover {
 
   .observation-grid-header {
     display: none;
+  }
+
+  .instrument-depth-cell {
+    font-size: 11px;
+  }
+
+  .calculator-settings {
+    grid-template-columns: 1fr 1fr;
   }
 
   .calculator-panel {
