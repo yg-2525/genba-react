@@ -354,6 +354,12 @@ textarea:focus {
   white-space: nowrap;
 }
 
+.instrument-depth-hint {
+  font-size: 12px;
+  color: var(--accent);
+  padding: 2px 0 6px 4px;
+}
+
 .calculator-actions {
   display: flex;
   gap: 8px;
