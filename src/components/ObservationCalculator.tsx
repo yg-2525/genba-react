@@ -190,7 +190,7 @@ export default function ObservationCalculator({ onApply }: Props) {
                 <tr key={row.id}>
                   <td>{row.distanceLabel}</td>
                   <td>{row.depth.toFixed(2)}</td>
-                  <td>{row.secondsAverage === null ? '-' : row.secondsAverage.toFixed(2)}</td>
+                  <td>{row.secondsAverage === null ? '-' : row.secondsAverage.toFixed(1)}</td>
                   <td>{row.pointVelocity === null ? '-' : row.pointVelocity.toFixed(3)}</td>
                 </tr>
               ))}
@@ -215,7 +215,7 @@ export default function ObservationCalculator({ onApply }: Props) {
             <tbody>
               {summary.sections.map(section => (
                 <tr key={section.id}>
-                  <td>{section.fromDistance.toFixed(2)} - {section.toDistance.toFixed(2)}</td>
+                  <td>{section.fromDistance.toFixed(1)} - {section.toDistance.toFixed(1)}</td>
                   <td>{section.width.toFixed(2)}</td>
                   <td>{section.averageDepth.toFixed(2)}</td>
                   <td>{section.averageVelocity.toFixed(3)}</td>

@@ -75,7 +75,7 @@ function parseDistance(value: string) {
     return { distance: null, isPier: false, distanceLabel: '' }
   }
 
-  return { distance: parsed, isPier: false, distanceLabel: parsed.toFixed(2) }
+  return { distance: parsed, isPier: false, distanceLabel: parsed.toFixed(1) }
 }
 
 function calcSecondsAverage(seconds1: number | null, seconds2: number | null) {
@@ -83,7 +83,7 @@ function calcSecondsAverage(seconds1: number | null, seconds2: number | null) {
   if (values.length === 0) {
     return null
   }
-  return round(values.reduce((sum, value) => sum + value, 0) / values.length, 2)
+  return round(values.reduce((sum, value) => sum + value, 0) / values.length, 1)
 }
 
 export function calcPointVelocity(count: number, secondsAverage: number, settings: CalculationSettings) {
@@ -187,7 +187,7 @@ export function calculateObservationSummary(
       rows.push({
         id: row.id,
         pointType,
-        distanceLabel: pointType === 'pier' ? 'P' : normalizedDistance.toFixed(2),
+        distanceLabel: pointType === 'pier' ? 'P' : normalizedDistance.toFixed(1),
         isPier: pointType === 'pier',
         distance: normalizedDistance,
         depth,
@@ -207,7 +207,7 @@ export function calculateObservationSummary(
     rows.push({
       id: row.id,
       pointType: 'measured',
-      distanceLabel: normalizedDistance.toFixed(2),
+      distanceLabel: normalizedDistance.toFixed(1),
       isPier: false,
       distance: normalizedDistance,
       depth,
