@@ -51,6 +51,11 @@ function round(value: number, digits: number) {
   return Math.ceil(value * factor) / factor
 }
 
+/** 流速専用: 小数第2位で四捨五入（4以下切り捨て、5以上切り上げ） */
+function roundVelocity(value: number) {
+  return Math.round(value * 100) / 100
+}
+
 function parseNumber(value: string) {
   const normalized = value.trim()
   if (!normalized) {
@@ -91,7 +96,7 @@ export function calcPointVelocity(count: number, secondsAverage: number, setting
     return 0
   }
 
-  return round((((count * settings.pulseFactor) / secondsAverage) * settings.coefficient) + settings.offset, 3)
+  return roundVelocity((((count * settings.pulseFactor) / secondsAverage) * settings.coefficient) + settings.offset)
 }
 
 export function createObservationRow(): ObservationInputRow {
@@ -145,7 +150,7 @@ function resolveRowVelocity(rows: ObservationComputedRow[], targetIndex: number)
 
     const ratio = (target.distance - prev.distance) / (next.distance - prev.distance)
     const estimated = (prev.pointVelocity ?? 0) + ((next.pointVelocity ?? 0) - (prev.pointVelocity ?? 0)) * ratio
-    return round(estimated, 3)
+    return roundVelocity(estimated)
   }
 
   if (prevIndex !== null) {
@@ -219,11 +224,14 @@ export function calculateObservationSummary(
 
   const sections = rows.slice(0, -1).map((current, index) => {
     const next = rows[index + 1]
+    if (current.pointType === 'depthOnly' || next.pointType === 'depthOnly') {
+      return null
+    }
     const width = round(next.distance - current.distance, 2)
     const averageDepth = round((current.depth + next.depth) / 2, 2)
     const currentVelocity = resolveRowVelocity(rows, index)
     const nextVelocity = resolveRowVelocity(rows, index + 1)
-    const averageVelocity = round((currentVelocity + nextVelocity) / 2, 3)
+    const averageVelocity = roundVelocity((currentVelocity + nextVelocity) / 2)
     const area = round(width * averageDepth, 2)
     const flow = round(area * averageVelocity, 2)
 
@@ -237,11 +245,11 @@ export function calculateObservationSummary(
       area,
       flow,
     }
-  }).filter(section => section.width >= 0)
+  }).filter((section): section is SectionSummary => section !== null && section.width >= 0)
 
   const totalArea = round(sections.reduce((sum, section) => sum + section.area, 0), 2)
   const totalFlow = round(sections.reduce((sum, section) => sum + section.flow, 0), 2)
-  const averageVelocity = totalArea === 0 ? 0 : round(totalFlow / totalArea, 3)
+  const averageVelocity = totalArea === 0 ? 0 : roundVelocity(totalFlow / totalArea)
 
   return {
     rows,

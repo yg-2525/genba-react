@@ -37,7 +37,7 @@ export default function EditModal({ data, onSave, onCancel }: Props) {
   function applyCalculatedValues(values: { velocity: number; area: number }) {
     setForm(prev => ({
       ...prev,
-      velocity: values.velocity.toFixed(3),
+      velocity: values.velocity.toFixed(2),
       area: values.area.toFixed(2),
     }))
     showToast('計算結果を反映しました', 'success')

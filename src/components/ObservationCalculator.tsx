@@ -162,7 +162,7 @@ export default function ObservationCalculator({ onApply }: Props) {
       <div className="stats-grid calculator-summary">
         <div className="stat-item">
           <span>平均流速</span>
-          <strong>{summary.averageVelocity.toFixed(3)} m/s</strong>
+          <strong>{summary.averageVelocity.toFixed(2)} m/s</strong>
         </div>
         <div className="stat-item">
           <span>断面積</span>
@@ -191,7 +191,7 @@ export default function ObservationCalculator({ onApply }: Props) {
                   <td>{row.distanceLabel}</td>
                   <td>{row.depth.toFixed(2)}</td>
                   <td>{row.secondsAverage === null ? '-' : row.secondsAverage.toFixed(1)}</td>
-                  <td>{row.pointVelocity === null ? '-' : row.pointVelocity.toFixed(3)}</td>
+                  <td>{row.pointVelocity === null ? '-' : row.pointVelocity.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -218,7 +218,7 @@ export default function ObservationCalculator({ onApply }: Props) {
                   <td>{section.fromDistance.toFixed(1)} - {section.toDistance.toFixed(1)}</td>
                   <td>{section.width.toFixed(2)}</td>
                   <td>{section.averageDepth.toFixed(2)}</td>
-                  <td>{section.averageVelocity.toFixed(3)}</td>
+                  <td>{section.averageVelocity.toFixed(2)}</td>
                   <td>{section.area.toFixed(2)}</td>
                   <td>{section.flow.toFixed(2)}</td>
                 </tr>

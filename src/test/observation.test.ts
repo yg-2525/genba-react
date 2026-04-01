@@ -14,7 +14,7 @@ const settings: CalculationSettings = {
 
 describe('observation calculator', () => {
   it('音数と秒数平均から点流速を計算できる', () => {
-    expect(calcPointVelocity(11, 23.6, settings)).toBe(0.388)
+    expect(calcPointVelocity(11, 23.6, settings)).toBe(0.39)
   })
 
   it('観測行から断面積と流量を集計できる', () => {
@@ -58,6 +58,6 @@ describe('observation calculator', () => {
 
     expect(summary.rows).toHaveLength(4)
     expect(summary.rows[2].distanceLabel).toBe('P')
-    expect(summary.sections.some(section => section.width === 0)).toBe(true)
+    expect(summary.sections.every(section => section.width > 0)).toBe(true)
   })
 })
