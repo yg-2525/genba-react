@@ -21,7 +21,9 @@ function calcInstrumentDepth(depthStr: string): string {
   const raw = Number(depthStr)
   if (!depthStr || isNaN(raw) || raw <= 0) return '-'
   const d = Math.round(raw / 0.05) * 0.05
-  if (d >= 0.5) {
+  // 0.48, 0.49 は丸めると 0.50 になるが、実務では6割（1点法）を使う
+  const roundedUp = d >= 0.5 && raw < 0.5
+  if (d >= 0.5 && !roundedUp) {
     return `${(d * 0.2).toFixed(2)}\n${(d * 0.8).toFixed(2)}`
   }
   return (d * 0.6).toFixed(2)
