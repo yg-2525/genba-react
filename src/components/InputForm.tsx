@@ -3,6 +3,7 @@ import type { GembaData } from '../types'
 import { useToast } from '../contexts/ToastContext'
 import ObservationCalculator from './ObservationCalculator'
 import ResponsiveDateInput from './ResponsiveDateInput'
+import TimeSelect from './TimeSelect'
 import { fetchAverageWaterLevelBySiteDateRange, fetchWaterLevelBySiteDate } from '../utils/waterLevel'
 
 const emptyForm = {
@@ -132,17 +133,12 @@ export default function InputForm({ onAdd }: Props) {
         {/* 開始時間+水位 / 終了時間+水位 */}
         <div className="input-row-2col">
           <div className="time-wl-group">
-            <div className={`floating-field${form.startTime ? ' filled' : ''}`}>
-              <input
-                id="field-start"
-                type="time"
-                step="600"
-                placeholder=" "
-                value={form.startTime}
-                onChange={e => setForm({ ...form, startTime: e.target.value })}
-              />
-              <label htmlFor="field-start">開始時間</label>
-            </div>
+            <TimeSelect
+              id="field-start"
+              label="開始時間"
+              value={form.startTime}
+              onChange={value => setForm({ ...form, startTime: value })}
+            />
             <div className={`floating-field${form.startWaterLevel ? ' filled' : ''}`}>
               <input
                 id="field-start-wl"
@@ -156,17 +152,12 @@ export default function InputForm({ onAdd }: Props) {
             </div>
           </div>
           <div className="time-wl-group">
-            <div className={`floating-field${form.endTime ? ' filled' : ''}`}>
-              <input
-                id="field-end"
-                type="time"
-                step="600"
-                placeholder=" "
-                value={form.endTime}
-                onChange={e => setForm({ ...form, endTime: e.target.value })}
-              />
-              <label htmlFor="field-end">終了時間</label>
-            </div>
+            <TimeSelect
+              id="field-end"
+              label="終了時間"
+              value={form.endTime}
+              onChange={value => setForm({ ...form, endTime: value })}
+            />
             <div className={`floating-field${form.endWaterLevel ? ' filled' : ''}`}>
               <input
                 id="field-end-wl"
