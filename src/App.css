@@ -355,10 +355,11 @@ textarea:focus {
 }
 
 .instrument-depth-cell {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-h);
   line-height: 1.4;
   padding: 4px;
+  white-space: pre-line;
 }
 
 .calculator-actions {

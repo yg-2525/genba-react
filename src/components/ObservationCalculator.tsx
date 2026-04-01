@@ -16,14 +16,15 @@ const defaultSettings = {
   pulseFactor: '',
 }
 
-/** 水深から器深を計算 */
+/** 水深から器深を計算（水深を0.05刻みに丸めてから算出） */
 function calcInstrumentDepth(depthStr: string): string {
-  const d = Number(depthStr)
-  if (!depthStr || isNaN(d) || d <= 0) return '-'
+  const raw = Number(depthStr)
+  if (!depthStr || isNaN(raw) || raw <= 0) return '-'
+  const d = Math.round(raw / 0.05) * 0.05
   if (d >= 0.5) {
-    return `2割:${(d * 0.2).toFixed(3)} / 8割:${(d * 0.8).toFixed(3)}`
+    return `${(d * 0.2).toFixed(2)}\n${(d * 0.8).toFixed(2)}`
   }
-  return `6割:${(d * 0.6).toFixed(3)}`
+  return (d * 0.6).toFixed(2)
 }
 
 export default function ObservationCalculator({ onApply }: Props) {
