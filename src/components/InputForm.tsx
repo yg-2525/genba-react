@@ -113,7 +113,7 @@ export default function InputForm({ onAdd }: Props) {
       {/* 基本情報 */}
       <div className="input-section">
         <div className="input-row-2col">
-          <div className="floating-field">
+          <div className={`floating-field${form.name ? ' filled' : ''}`}>
             <input
               id="field-name"
               placeholder=" "
