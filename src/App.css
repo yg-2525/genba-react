@@ -338,7 +338,7 @@ textarea:focus {
 
 .observation-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) 80px;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) 80px;
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
@@ -354,10 +354,11 @@ textarea:focus {
   white-space: nowrap;
 }
 
-.instrument-depth-hint {
+.instrument-depth-cell {
   font-size: 12px;
-  color: var(--accent);
-  padding: 2px 0 6px 4px;
+  color: var(--text-h);
+  line-height: 1.4;
+  padding: 4px;
 }
 
 .calculator-actions {

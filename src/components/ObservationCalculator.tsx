@@ -17,13 +17,13 @@ const defaultSettings = {
 }
 
 /** 水深から器深を計算 */
-function calcInstrumentDepth(depthStr: string): string | null {
+function calcInstrumentDepth(depthStr: string): string {
   const d = Number(depthStr)
-  if (!depthStr || isNaN(d) || d <= 0) return null
+  if (!depthStr || isNaN(d) || d <= 0) return '-'
   if (d >= 0.5) {
-    return `2割: ${(d * 0.2).toFixed(3)}m ・ 8割: ${(d * 0.8).toFixed(3)}m`
+    return `2割:${(d * 0.2).toFixed(3)} / 8割:${(d * 0.8).toFixed(3)}`
   }
-  return `6割: ${(d * 0.6).toFixed(3)}m`
+  return `6割:${(d * 0.6).toFixed(3)}`
 }
 
 export default function ObservationCalculator({ onApply }: Props) {
@@ -100,6 +100,7 @@ export default function ObservationCalculator({ onApply }: Props) {
       <div className="observation-grid observation-grid-header">
         <span>距離(m)</span>
         <span>水深(m)</span>
+        <span>器深(m)</span>
         <span>音数</span>
         <span>秒数1</span>
         <span>秒数2</span>
@@ -107,41 +108,37 @@ export default function ObservationCalculator({ onApply }: Props) {
       </div>
 
       {rows.map(row => (
-        <div key={row.id}>
-          <div className="observation-grid">
-            <input
-              type="text"
-              value={row.distance}
-              placeholder="距離 / P"
-              onChange={event => updateRow(row.id, 'distance', event.target.value)}
-            />
-            <input type="number" step="any" value={row.depth} placeholder="水深" onChange={event => updateRow(row.id, 'depth', event.target.value)} />
-            <input
-              type="number"
-              step="any"
-              value={row.count}
-              placeholder="音数"
-              onChange={event => updateRow(row.id, 'count', event.target.value)}
-            />
-            <input
-              type="number"
-              step="any"
-              value={row.seconds1}
-              placeholder="秒数1"
-              onChange={event => updateRow(row.id, 'seconds1', event.target.value)}
-            />
-            <input
-              type="number"
-              step="any"
-              value={row.seconds2}
-              placeholder="秒数2"
-              onChange={event => updateRow(row.id, 'seconds2', event.target.value)}
-            />
-            <button type="button" className="btn-secondary observation-row-remove" onClick={() => removeRow(row.id)}>行削除</button>
-          </div>
-          {calcInstrumentDepth(row.depth) && (
-            <div className="instrument-depth-hint">器深: {calcInstrumentDepth(row.depth)}</div>
-          )}
+        <div key={row.id} className="observation-grid">
+          <input
+            type="text"
+            value={row.distance}
+            placeholder="距離 / P"
+            onChange={event => updateRow(row.id, 'distance', event.target.value)}
+          />
+          <input type="number" step="any" value={row.depth} placeholder="水深" onChange={event => updateRow(row.id, 'depth', event.target.value)} />
+          <span className="instrument-depth-cell">{calcInstrumentDepth(row.depth)}</span>
+          <input
+            type="number"
+            step="any"
+            value={row.count}
+            placeholder="音数"
+            onChange={event => updateRow(row.id, 'count', event.target.value)}
+          />
+          <input
+            type="number"
+            step="any"
+            value={row.seconds1}
+            placeholder="秒数1"
+            onChange={event => updateRow(row.id, 'seconds1', event.target.value)}
+          />
+          <input
+            type="number"
+            step="any"
+            value={row.seconds2}
+            placeholder="秒数2"
+            onChange={event => updateRow(row.id, 'seconds2', event.target.value)}
+          />
+          <button type="button" className="btn-secondary observation-row-remove" onClick={() => removeRow(row.id)}>行削除</button>
         </div>
       ))}
 
