@@ -206,7 +206,7 @@ export default function InputForm({ onAdd }: Props) {
       {/* 計算結果 */}
       <div className="result-panel">
         <h3>計算結果</h3>
-        <div className="result-grid">
+        <div className="input-row-2col">
           <div className={`floating-field${form.velocity ? ' filled' : ''}`}>
             <input
               id="field-vel"
@@ -229,10 +229,10 @@ export default function InputForm({ onAdd }: Props) {
             />
             <label htmlFor="field-area">断面積（㎡）</label>
           </div>
-          <div className="result-card">
-            <span>流量（㎥/s）</span>
-            <strong>{hasCalculatedFlow ? calculatedFlow.toFixed(2) : '--'}</strong>
-          </div>
+        </div>
+        <div className="result-card" style={{ marginTop: '10px' }}>
+          <span>流量（㎥/s）</span>
+          <strong>{hasCalculatedFlow ? calculatedFlow.toFixed(2) : '--'}</strong>
         </div>
       </div>
 

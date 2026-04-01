@@ -11,9 +11,9 @@ type Props = {
 }
 
 const defaultSettings = {
-  coefficient: '0.163',
-  offset: '0.008',
-  pulseFactor: '5',
+  coefficient: '',
+  offset: '',
+  pulseFactor: '',
 }
 
 export default function ObservationCalculator({ onApply }: Props) {
@@ -52,41 +52,39 @@ export default function ObservationCalculator({ onApply }: Props) {
       </div>
 
       <div className="calculator-settings">
-        <label>
-          検定係数 a
+        <div className={`floating-field${settings.coefficient ? ' filled' : ''}`}>
           <input
+            id="setting-coeff"
             type="number"
             step="any"
+            placeholder=" "
             value={settings.coefficient}
             onChange={event => setSettings(prev => ({ ...prev, coefficient: event.target.value }))}
           />
-        </label>
-        <label>
-          補正値 b
+          <label htmlFor="setting-coeff">検定係数 a</label>
+        </div>
+        <div className={`floating-field${settings.offset ? ' filled' : ''}`}>
           <input
+            id="setting-offset"
             type="number"
             step="any"
+            placeholder=" "
             value={settings.offset}
             onChange={event => setSettings(prev => ({ ...prev, offset: event.target.value }))}
           />
-        </label>
-        <label>
-          1回転あたり音数
+          <label htmlFor="setting-offset">補正値 b</label>
+        </div>
+        <div className={`floating-field${settings.pulseFactor ? ' filled' : ''}`}>
           <input
+            id="setting-pulse"
             type="number"
             step="any"
+            placeholder=" "
             value={settings.pulseFactor}
             onChange={event => setSettings(prev => ({ ...prev, pulseFactor: event.target.value }))}
           />
-        </label>
-      </div>
-
-      <div className="formula-note">
-        <strong>点流速式</strong>
-        <span>
-          点流速 = ((音数 × 1回転あたり音数) / 秒数平均) × a + b
-        </span>
-        <span>検定係数 a、補正値 b、1回転あたり音数は流速計ごとに手入力します。</span>
+          <label htmlFor="setting-pulse">1回転あたり音数</label>
+        </div>
       </div>
 
       <div className="observation-grid observation-grid-header">
