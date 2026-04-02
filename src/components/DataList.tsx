@@ -42,21 +42,37 @@ export default function DataList({
           {filteredList.map((data, index) => (
             <li key={data.id} className={compareFirstIndex === index ? 'selected' : ''}>
               <div className="item-content">
-                <div><span className="item-label">現場:</span> {data.name}</div>
-                <div><span className="item-label">日付:</span> {formatDateForDisplay(data.date, isMobile)}</div>
-                {(data.startTime || data.endTime) && (
-                  <div>
-                    <span className="item-label">実施時間:</span> {data.startTime || '--:--'} - {data.endTime || '--:--'}
-                  </div>
-                )}
-                {data.work && <div><span className="item-label">作業:</span> {data.work}</div>}
-                {data.memo && <div><span className="item-label">メモ:</span> {data.memo}</div>}
-                <div>
-                  <span className="item-label">観測値:</span>{' '}
-                  水位:{data.waterLevel}m | 流速:{data.velocity}m/s | 面積:{data.area}㎡ | 流量:{data.flow}
+                <div className="item-header-row">
+                  <span className="item-name">{data.name}</span>
+                  <span className="item-date">{formatDateForDisplay(data.date, isMobile)}</span>
+                  {(data.startTime || data.endTime) && (
+                    <span className="item-time">{data.startTime || '--:--'} - {data.endTime || '--:--'}</span>
+                  )}
                 </div>
-                {data.compareNotes && (
-                  <div><span className="item-label">比較メモ:</span> {data.compareNotes}</div>
+                <div className="item-metrics">
+                  <div className="item-metric">
+                    <span>水位</span>
+                    <strong>{data.waterLevel}m</strong>
+                  </div>
+                  <div className="item-metric">
+                    <span>流速</span>
+                    <strong>{data.velocity}m/s</strong>
+                  </div>
+                  <div className="item-metric">
+                    <span>面積</span>
+                    <strong>{data.area}㎡</strong>
+                  </div>
+                  <div className="item-metric">
+                    <span>流量</span>
+                    <strong>{data.flow}</strong>
+                  </div>
+                </div>
+                {(data.work || data.memo || data.compareNotes) && (
+                  <div className="item-notes">
+                    {data.work && <span>作業: {data.work}</span>}
+                    {data.memo && <span>メモ: {data.memo}</span>}
+                    {data.compareNotes && <span>比較: {data.compareNotes}</span>}
+                  </div>
                 )}
                 {confirmIndex === index && (
                   <div className="delete-confirm">
