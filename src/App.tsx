@@ -101,7 +101,10 @@ function App() {
 
   return (
     <div className="app">
-      <h1>現場ログ管理</h1>
+      <header className="app-header">
+        <h1>現場観測管理システム</h1>
+        <p className="app-description">本アプリは流量観測業務における記録・計算・比較を目的として作成しました</p>
+      </header>
 
       <InputForm onAdd={data => setDataList(prev => [...prev, data])} />
 
