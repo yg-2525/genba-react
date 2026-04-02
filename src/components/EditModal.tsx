@@ -31,15 +31,18 @@ export default function EditModal({ data, onSave, onCancel }: Props) {
     area: String(data.area),
   })
   const { showToast } = useToast()
-  const calculatedFlow = Number(form.velocity) * Number(form.area)
+  const [storedFlow, setStoredFlow] = useState('')
+  const manualFlow = Number(form.velocity) * Number(form.area)
+  const calculatedFlow = storedFlow ? Number(storedFlow) : manualFlow
   const hasCalculatedFlow = !Number.isNaN(calculatedFlow) && Number.isFinite(calculatedFlow)
 
-  function applyCalculatedValues(values: { velocity: number; area: number }) {
+  function applyCalculatedValues(values: { velocity: number; area: number; flow: number }) {
     setForm(prev => ({
       ...prev,
       velocity: values.velocity.toFixed(2),
       area: values.area.toFixed(2),
     }))
+    setStoredFlow(values.flow.toFixed(2))
     showToast('計算結果を反映しました', 'success')
   }
 
@@ -66,7 +69,7 @@ export default function EditModal({ data, onSave, onCancel }: Props) {
       waterLevel: wl,
       velocity: vel,
       area: ar,
-      flow: (vel * ar).toFixed(2),
+      flow: storedFlow || (vel * ar).toFixed(2),
     })
   }
 
@@ -119,7 +122,7 @@ export default function EditModal({ data, onSave, onCancel }: Props) {
                 step="any"
                 placeholder="流速(m/s)"
                 value={form.velocity}
-                onChange={e => setForm({ ...form, velocity: e.target.value })}
+                onChange={e => { setForm({ ...form, velocity: e.target.value }); setStoredFlow('') }}
               />
             </label>
             <label>
@@ -129,7 +132,7 @@ export default function EditModal({ data, onSave, onCancel }: Props) {
                 step="any"
                 placeholder="断面積(㎡)"
                 value={form.area}
-                onChange={e => setForm({ ...form, area: e.target.value })}
+                onChange={e => { setForm({ ...form, area: e.target.value }); setStoredFlow('') }}
               />
             </label>
             <div className="result-card">

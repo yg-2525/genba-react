@@ -7,7 +7,7 @@ import {
 } from '../utils/observation'
 
 type Props = {
-  onApply: (values: { velocity: number; area: number }) => void
+  onApply: (values: { velocity: number; area: number; flow: number }) => void
 }
 
 const defaultSettings = {
@@ -152,7 +152,7 @@ export default function ObservationCalculator({ onApply }: Props) {
         <button
           type="button"
           className="btn-primary"
-          onClick={() => onApply({ velocity: summary.averageVelocity, area: summary.totalArea })}
+          onClick={() => onApply({ velocity: summary.averageVelocity, area: summary.totalArea, flow: summary.totalFlow })}
           disabled={summary.sections.length === 0}
         >
           計算結果を反映

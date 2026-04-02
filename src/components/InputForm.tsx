@@ -15,6 +15,7 @@ const emptyForm = {
   endWaterLevel: '',
   velocity: '',
   area: '',
+  flow: '',
 }
 
 type Props = {
@@ -33,14 +34,16 @@ export default function InputForm({ onAdd }: Props) {
   const rawAverage = hasStartWL && hasEndWL ? (startWL + endWL) / 2 : hasStartWL ? startWL : hasEndWL ? endWL : null
   const averageWaterLevel = rawAverage != null ? Math.ceil(rawAverage * 100) / 100 : null
 
-  const calculatedFlow = Number(form.velocity) * Number(form.area)
+  const manualFlow = Number(form.velocity) * Number(form.area)
+  const calculatedFlow = form.flow ? Number(form.flow) : manualFlow
   const hasCalculatedFlow = !Number.isNaN(calculatedFlow) && Number.isFinite(calculatedFlow)
 
-  function applyCalculatedValues(values: { velocity: number; area: number }) {
+  function applyCalculatedValues(values: { velocity: number; area: number; flow: number }) {
     setForm(prev => ({
       ...prev,
       velocity: values.velocity.toFixed(2),
       area: values.area.toFixed(2),
+      flow: values.flow.toFixed(2),
     }))
     showToast('計算結果を反映しました', 'success')
   }
@@ -69,7 +72,7 @@ export default function InputForm({ onAdd }: Props) {
       waterLevel: wl,
       velocity: vel,
       area: ar,
-      flow: (vel * ar).toFixed(2),
+      flow: form.flow || (vel * ar).toFixed(2),
       compareNotes: '',
     })
     setForm(emptyForm)
@@ -210,7 +213,7 @@ export default function InputForm({ onAdd }: Props) {
               step="any"
               placeholder=" "
               value={form.velocity}
-              onChange={e => setForm({ ...form, velocity: e.target.value })}
+              onChange={e => setForm({ ...form, velocity: e.target.value, flow: '' })}
             />
             <label htmlFor="field-vel">流速（m/s）</label>
           </div>
@@ -221,7 +224,7 @@ export default function InputForm({ onAdd }: Props) {
               step="any"
               placeholder=" "
               value={form.area}
-              onChange={e => setForm({ ...form, area: e.target.value })}
+              onChange={e => setForm({ ...form, area: e.target.value, flow: '' })}
             />
             <label htmlFor="field-area">断面積（㎡）</label>
           </div>
