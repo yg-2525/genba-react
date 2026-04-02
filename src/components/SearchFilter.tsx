@@ -39,7 +39,9 @@ export default function SearchFilter({
           onChange={onEndDate}
         />
       </div>
-      <button className="btn-secondary" onClick={onReset}>リセット</button>
+      <div style={{ textAlign: 'center' }}>
+        <button className="btn-secondary" onClick={onReset}>リセット</button>
+      </div>
     </section>
   )
 }
