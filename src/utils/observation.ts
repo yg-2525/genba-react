@@ -48,7 +48,7 @@ export type ObservationSummary = {
 
 function round(value: number, digits: number) {
   const factor = 10 ** digits
-  return Math.ceil(value * factor) / factor
+  return Math.round(value * factor) / factor
 }
 
 /** 流速専用: 小数第2位で四捨五入（4以下切り捨て、5以上切り上げ） */
