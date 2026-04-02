@@ -119,51 +119,6 @@ function inferPointType(row: ObservationInputRow): ObservationPointType {
   return 'measured'
 }
 
-function resolveRowVelocity(rows: ObservationComputedRow[], targetIndex: number) {
-  const target = rows[targetIndex]
-  if (target.pointVelocity !== null) {
-    return target.pointVelocity
-  }
-
-  let prevIndex: number | null = null
-  for (let index = targetIndex - 1; index >= 0; index -= 1) {
-    if (rows[index].pointVelocity !== null) {
-      prevIndex = index
-      break
-    }
-  }
-
-  let nextIndex: number | null = null
-  for (let index = targetIndex + 1; index < rows.length; index += 1) {
-    if (rows[index].pointVelocity !== null) {
-      nextIndex = index
-      break
-    }
-  }
-
-  if (prevIndex !== null && nextIndex !== null) {
-    const prev = rows[prevIndex]
-    const next = rows[nextIndex]
-    if (next.distance === prev.distance) {
-      return prev.pointVelocity ?? 0
-    }
-
-    const ratio = (target.distance - prev.distance) / (next.distance - prev.distance)
-    const estimated = (prev.pointVelocity ?? 0) + ((next.pointVelocity ?? 0) - (prev.pointVelocity ?? 0)) * ratio
-    return roundVelocity(estimated)
-  }
-
-  if (prevIndex !== null) {
-    return rows[prevIndex].pointVelocity ?? 0
-  }
-
-  if (nextIndex !== null) {
-    return rows[nextIndex].pointVelocity ?? 0
-  }
-
-  return 0
-}
-
 export function calculateObservationSummary(
   inputRows: ObservationInputRow[],
   settings: CalculationSettings,
@@ -222,27 +177,99 @@ export function calculateObservationSummary(
     })
   })
 
-  const sections = rows.slice(0, -1).map((current, index) => {
-    const next = rows[index + 1]
-    const width = round(next.distance - current.distance, 2)
-    const averageDepth = round((current.depth + next.depth) / 2, 2)
-    const currentVelocity = resolveRowVelocity(rows, index)
-    const nextVelocity = resolveRowVelocity(rows, index + 1)
-    const averageVelocity = roundVelocity((currentVelocity + nextVelocity) / 2)
-    const area = round(width * averageDepth, 2)
-    const flow = round(area * averageVelocity, 2)
+  // Build sub-sections with area only
+  const subSections: Array<{
+    fromIdx: number
+    toIdx: number
+    fromDistance: number
+    toDistance: number
+    width: number
+    averageDepth: number
+    area: number
+  }> = []
 
-    return {
-      id: current.id,
-      fromDistance: current.distance,
-      toDistance: next.distance,
-      width,
-      averageDepth,
-      averageVelocity,
-      area,
-      flow,
+  for (let i = 0; i < rows.length - 1; i++) {
+    const current = rows[i]
+    const next = rows[i + 1]
+    const width = round(next.distance - current.distance, 2)
+    if (width < 0) continue
+    const averageDepth = round((current.depth + next.depth) / 2, 2)
+    const area = round(width * averageDepth, 2)
+    subSections.push({
+      fromIdx: i, toIdx: i + 1,
+      fromDistance: current.distance, toDistance: next.distance,
+      width, averageDepth, area,
+    })
+  }
+
+  // Classify sub-sections and group around measured rows
+  const sections: SectionSummary[] = []
+  const measuredGroups = new Map<number, typeof subSections>()
+
+  for (const sub of subSections) {
+    const fromType = rows[sub.fromIdx].pointType
+    const toType = rows[sub.toIdx].pointType
+
+    if (fromType === 'measured' && toType === 'measured') {
+      const v1 = rows[sub.fromIdx].pointVelocity ?? 0
+      const v2 = rows[sub.toIdx].pointVelocity ?? 0
+      const avgVel = roundVelocity((v1 + v2) / 2)
+      sections.push({
+        id: rows[sub.fromIdx].id,
+        fromDistance: sub.fromDistance,
+        toDistance: sub.toDistance,
+        width: sub.width,
+        averageDepth: sub.averageDepth,
+        averageVelocity: avgVel,
+        area: sub.area,
+        flow: round(sub.area * avgVel, 2),
+      })
+    } else if (fromType === 'measured') {
+      const key = sub.fromIdx
+      if (!measuredGroups.has(key)) measuredGroups.set(key, [])
+      measuredGroups.get(key)!.push(sub)
+    } else if (toType === 'measured') {
+      const key = sub.toIdx
+      if (!measuredGroups.has(key)) measuredGroups.set(key, [])
+      measuredGroups.get(key)!.push(sub)
+    } else {
+      sections.push({
+        id: rows[sub.fromIdx].id,
+        fromDistance: sub.fromDistance,
+        toDistance: sub.toDistance,
+        width: sub.width,
+        averageDepth: sub.averageDepth,
+        averageVelocity: 0,
+        area: sub.area,
+        flow: 0,
+      })
     }
-  }).filter(section => section.width >= 0)
+  }
+
+  // Build merged sections from measured groups
+  for (const [mIdx, subs] of measuredGroups) {
+    const measured = rows[mIdx]
+    const sorted = [...subs].sort((a, b) => a.fromDistance - b.fromDistance)
+    const fromDist = sorted[0].fromDistance
+    const toDist = sorted[sorted.length - 1].toDistance
+    const totalWidth = round(toDist - fromDist, 2)
+    const totalArea = round(sorted.reduce((sum, s) => sum + s.area, 0), 2)
+    const velocity = measured.pointVelocity ?? 0
+    const avgDepth = totalWidth > 0 ? round(totalArea / totalWidth, 2) : 0
+
+    sections.push({
+      id: measured.id,
+      fromDistance: fromDist,
+      toDistance: toDist,
+      width: totalWidth,
+      averageDepth: avgDepth,
+      averageVelocity: velocity,
+      area: totalArea,
+      flow: round(totalArea * velocity, 2),
+    })
+  }
+
+  sections.sort((a, b) => a.fromDistance - b.fromDistance)
 
   const totalArea = round(sections.reduce((sum, section) => sum + section.area, 0), 2)
   const totalFlow = round(sections.reduce((sum, section) => sum + section.flow, 0), 2)
