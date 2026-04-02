@@ -1,8 +1,19 @@
 /* ===== レイアウト ===== */
 .app {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 24px 16px 64px;
+}
+
+.app-grid-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.app-grid-cell {
+  min-width: 0;
 }
 
 .app h1 {
@@ -738,6 +749,12 @@ button:active {
 .delete-confirm button {
   font-size: 12px;
   padding: 4px 10px;
+}
+
+@media (max-width: 960px) {
+  .app-grid-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
