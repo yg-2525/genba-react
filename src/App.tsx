@@ -106,34 +106,29 @@ function App() {
         <p className="app-description">本アプリは流量観測業務における記録・計算・比較を目的として作成しました</p>
       </header>
 
-      <div className="app-columns">
-        <div className="app-col-left">
-          <InputForm onAdd={data => setDataList(prev => [...prev, data])} />
-        </div>
-        <div className="app-col-right">
-          <SearchFilter
-            searchName={searchName}
-            filterStartDate={filterStartDate}
-            filterEndDate={filterEndDate}
-            onSearchName={setSearchName}
-            onStartDate={setFilterStartDate}
-            onEndDate={setFilterEndDate}
-            onReset={() => { setSearchName(''); setFilterStartDate(''); setFilterEndDate('') }}
-          />
+      <InputForm onAdd={data => setDataList(prev => [...prev, data])} />
 
-          <StatsPanel dataList={dataList} onExportCSV={exportCSV} />
+      <SearchFilter
+        searchName={searchName}
+        filterStartDate={filterStartDate}
+        filterEndDate={filterEndDate}
+        onSearchName={setSearchName}
+        onStartDate={setFilterStartDate}
+        onEndDate={setFilterEndDate}
+        onReset={() => { setSearchName(''); setFilterStartDate(''); setFilterEndDate('') }}
+      />
 
-          <DataList
-            filteredList={filteredList}
-            compareFirstIndex={compareFirst}
-            onEdit={index => setEditingId(filteredList[index].id)}
-            onCompare={handleCompare}
-            onDelete={handleDelete}
-          />
+      <StatsPanel dataList={dataList} onExportCSV={exportCSV} />
 
-          <ChartView dataList={dataList} />
-        </div>
-      </div>
+      <DataList
+        filteredList={filteredList}
+        compareFirstIndex={compareFirst}
+        onEdit={index => setEditingId(filteredList[index].id)}
+        onCompare={handleCompare}
+        onDelete={handleDelete}
+      />
+
+      <ChartView dataList={dataList} />
 
       {editingId !== null && editingData && (
         <EditModal
