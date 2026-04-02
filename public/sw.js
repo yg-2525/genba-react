@@ -1,4 +1,4 @@
-const CACHE_NAME = 'genba-v2'
+const CACHE_NAME = 'genba-v3'
 const PRECACHE_URLS = [
   '/genba-react/',
   '/genba-react/index.html',
