@@ -172,6 +172,10 @@ export default function ObservationCalculator({ onApply }: Props) {
           <span>流量</span>
           <strong>{summary.totalFlow.toFixed(2)}</strong>
         </div>
+        <div className="stat-item">
+          <span>√Q</span>
+          <strong>{(Math.round(Math.sqrt(summary.totalFlow) * 100) / 100).toFixed(2)}</strong>
+        </div>
       </div>
 
       {summary.rows.length > 0 && (
