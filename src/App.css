@@ -6,44 +6,67 @@
 }
 
 .app h1 {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 800;
   color: var(--text-h);
   margin: 0;
   text-align: center;
+  letter-spacing: -0.5px;
 }
 
 .app-header {
   text-align: center;
-  margin-bottom: 28px;
-  padding: 28px 20px 20px;
-  background: linear-gradient(135deg, var(--accent-bg), transparent);
+  margin-bottom: 32px;
+  padding: 32px 24px 24px;
+  background: linear-gradient(135deg, var(--accent-bg) 0%, transparent 60%);
   border: 1px solid var(--accent-border);
   border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-header::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.06;
 }
 
 .app-description {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   font-size: 14px;
   color: var(--text);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  line-height: 1.6;
 }
 
 /* ===== カード ===== */
 .card {
-  background: var(--bg);
+  background: var(--bg-card, var(--bg));
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius, 12px);
   padding: 24px;
   margin-bottom: 20px;
   box-shadow: var(--shadow);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .card h2 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
   color: var(--text-h);
   margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--accent-bg);
 }
 
 /* ===== フォームグリッド ===== */
@@ -77,17 +100,18 @@
   width: 100%;
   padding: 18px 12px 6px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
+  border-radius: 10px;
+  background: var(--bg-card, var(--bg));
   color: var(--text-h);
   font-size: 15px;
   box-sizing: border-box;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .floating-field input:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
 .floating-field label {
@@ -441,22 +465,32 @@ textarea:focus {
 button {
   cursor: pointer;
   border: none;
-  border-radius: 6px;
-  padding: 8px 18px;
+  border-radius: 8px;
+  padding: 9px 20px;
   font-size: 14px;
-  font-weight: 500;
-  transition: opacity 0.2s, box-shadow 0.2s;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
 }
 
 button:hover {
-  opacity: 0.85;
-  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button:active {
+  transform: translateY(0);
 }
 
 .btn-primary {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover, var(--accent)));
   color: #fff;
   margin-right: 8px;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
 }
 
 .btn-secondary {
@@ -466,8 +500,9 @@ button:hover {
 }
 
 .btn-danger {
-  background: #fee2e2;
+  background: #fef2f2;
   color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
 /* ===== 統計グリッド ===== */
@@ -479,22 +514,32 @@ button:hover {
 }
 
 .stat-item {
-  background: var(--accent-bg);
-  border-radius: 8px;
-  padding: 12px 16px;
+  background: var(--bg-card, var(--bg));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  transition: border-color 0.2s;
+}
+
+.stat-item:hover {
+  border-color: var(--accent-border);
 }
 
 .stat-item span {
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: var(--text);
 }
 
 .stat-item strong {
-  font-size: 18px;
-  color: var(--text-h);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 /* ===== データ一覧 ===== */
@@ -509,13 +554,19 @@ button:hover {
 
 .data-list li {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px 16px;
+  border-radius: 10px;
+  padding: 16px 18px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: var(--bg-card, var(--bg));
+}
+
+.data-list li:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
 }
 
 .data-list li.selected {
@@ -623,18 +674,21 @@ button:hover {
 .compare-table th,
 .compare-table td {
   border: 1px solid var(--border);
-  padding: 8px 12px;
+  padding: 10px 14px;
   text-align: center;
 }
 
 .compare-table thead th {
   background: var(--accent-bg);
-  color: var(--text-h);
-  font-weight: 600;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .compare-table tbody tr:hover {
-  background: var(--code-bg);
+  background: var(--accent-bg);
 }
 
 /* ===== トースト通知 ===== */
