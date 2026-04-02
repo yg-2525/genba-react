@@ -27,6 +27,12 @@ export type ObservationComputedRow = {
   pointVelocity: number | null
 }
 
+export type SubSectionRow = {
+  width: number
+  averageDepth: number
+  area: number
+}
+
 export type SectionSummary = {
   id: string
   fromDistance: number
@@ -36,6 +42,7 @@ export type SectionSummary = {
   averageVelocity: number
   area: number
   flow: number
+  subRows: SubSectionRow[]
 }
 
 export type ObservationSummary = {
@@ -223,6 +230,7 @@ export function calculateObservationSummary(
         averageVelocity: avgVel,
         area: sub.area,
         flow: round(sub.area * avgVel, 2),
+        subRows: [{ width: sub.width, averageDepth: sub.averageDepth, area: sub.area }],
       })
     } else if (fromType === 'measured') {
       const key = sub.fromIdx
@@ -242,6 +250,7 @@ export function calculateObservationSummary(
         averageVelocity: 0,
         area: sub.area,
         flow: 0,
+        subRows: [{ width: sub.width, averageDepth: sub.averageDepth, area: sub.area }],
       })
     }
   }
@@ -266,6 +275,7 @@ export function calculateObservationSummary(
       averageVelocity: velocity,
       area: totalArea,
       flow: round(totalArea * velocity, 2),
+      subRows: sorted.map(s => ({ width: s.width, averageDepth: s.averageDepth, area: s.area })),
     })
   }
 

@@ -213,13 +213,29 @@ export default function ObservationCalculator({ onApply }: Props) {
             </thead>
             <tbody>
               {summary.sections.map(section => (
-                <tr key={section.id}>
-                  <td>{section.width.toFixed(2)}</td>
-                  <td>{section.averageDepth.toFixed(2)}</td>
-                  <td>{section.averageVelocity.toFixed(2)}</td>
-                  <td>{section.area.toFixed(2)}</td>
-                  <td>{section.flow.toFixed(2)}</td>
-                </tr>
+                section.subRows.length <= 1 ? (
+                  <tr key={section.id}>
+                    <td>{section.width.toFixed(2)}</td>
+                    <td>{section.subRows[0]?.averageDepth.toFixed(2) ?? section.averageDepth.toFixed(2)}</td>
+                    <td>{section.averageVelocity.toFixed(2)}</td>
+                    <td>{section.area.toFixed(2)}</td>
+                    <td>{section.flow.toFixed(2)}</td>
+                  </tr>
+                ) : (
+                  section.subRows.map((sub, i) => (
+                    <tr key={`${section.id}-${i}`}>
+                      <td>{sub.width.toFixed(2)}</td>
+                      <td>{sub.averageDepth.toFixed(2)}</td>
+                      {i === 0 ? (
+                        <>
+                          <td rowSpan={section.subRows.length}>{section.averageVelocity.toFixed(2)}</td>
+                          <td rowSpan={section.subRows.length}>{section.area.toFixed(2)}</td>
+                          <td rowSpan={section.subRows.length}>{section.flow.toFixed(2)}</td>
+                        </>
+                      ) : null}
+                    </tr>
+                  ))
+                )
               ))}
             </tbody>
           </table>
