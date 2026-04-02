@@ -106,29 +106,34 @@ function App() {
         <p className="app-description">本アプリは流量観測業務における記録・計算・比較を目的として作成しました</p>
       </header>
 
-      <InputForm onAdd={data => setDataList(prev => [...prev, data])} />
+      <div className="app-columns">
+        <div className="app-col-left">
+          <InputForm onAdd={data => setDataList(prev => [...prev, data])} />
+        </div>
+        <div className="app-col-right">
+          <SearchFilter
+            searchName={searchName}
+            filterStartDate={filterStartDate}
+            filterEndDate={filterEndDate}
+            onSearchName={setSearchName}
+            onStartDate={setFilterStartDate}
+            onEndDate={setFilterEndDate}
+            onReset={() => { setSearchName(''); setFilterStartDate(''); setFilterEndDate('') }}
+          />
 
-      <SearchFilter
-        searchName={searchName}
-        filterStartDate={filterStartDate}
-        filterEndDate={filterEndDate}
-        onSearchName={setSearchName}
-        onStartDate={setFilterStartDate}
-        onEndDate={setFilterEndDate}
-        onReset={() => { setSearchName(''); setFilterStartDate(''); setFilterEndDate('') }}
-      />
+          <StatsPanel dataList={dataList} onExportCSV={exportCSV} />
 
-      <StatsPanel dataList={dataList} onExportCSV={exportCSV} />
+          <DataList
+            filteredList={filteredList}
+            compareFirstIndex={compareFirst}
+            onEdit={index => setEditingId(filteredList[index].id)}
+            onCompare={handleCompare}
+            onDelete={handleDelete}
+          />
 
-      <DataList
-        filteredList={filteredList}
-        compareFirstIndex={compareFirst}
-        onEdit={index => setEditingId(filteredList[index].id)}
-        onCompare={handleCompare}
-        onDelete={handleDelete}
-      />
-
-      <ChartView dataList={dataList} />
+          <ChartView dataList={dataList} />
+        </div>
+      </div>
 
       {editingId !== null && editingData && (
         <EditModal

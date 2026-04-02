@@ -1,8 +1,24 @@
 /* ===== レイアウト ===== */
 .app {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 24px 16px 64px;
+}
+
+.app-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.app-col-left {
+  position: sticky;
+  top: 24px;
+}
+
+.app-col-right {
+  min-width: 0;
 }
 
 .app h1 {
@@ -738,6 +754,16 @@ button:active {
 .delete-confirm button {
   font-size: 12px;
   padding: 4px 10px;
+}
+
+@media (max-width: 960px) {
+  .app-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .app-col-left {
+    position: static;
+  }
 }
 
 @media (max-width: 640px) {
