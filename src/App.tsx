@@ -121,18 +121,19 @@ function App() {
       <div className="app-grid-row">
         <div className="app-grid-cell">
           <StatsPanel dataList={dataList} onExportCSV={exportCSV} />
-          <ChartView dataList={dataList} />
         </div>
         <div className="app-grid-cell">
-          <DataList
-            filteredList={filteredList}
-            compareFirstIndex={compareFirst}
-            onEdit={index => setEditingId(filteredList[index].id)}
-            onCompare={handleCompare}
-            onDelete={handleDelete}
-          />
+          <ChartView dataList={dataList} />
         </div>
       </div>
+
+      <DataList
+        filteredList={filteredList}
+        compareFirstIndex={compareFirst}
+        onEdit={index => setEditingId(filteredList[index].id)}
+        onCompare={handleCompare}
+        onDelete={handleDelete}
+      />
 
       {editingId !== null && editingData && (
         <EditModal
