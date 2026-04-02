@@ -204,18 +204,16 @@ export default function ObservationCalculator({ onApply }: Props) {
           <table className="compare-table calc-table">
             <thead>
               <tr>
-                <th>区間</th>
                 <th>区分幅</th>
                 <th>平均水深</th>
                 <th>平均流速</th>
-                <th>区分断面積</th>
+                <th>合計断面積</th>
                 <th>区分流量</th>
               </tr>
             </thead>
             <tbody>
               {summary.sections.map(section => (
                 <tr key={section.id}>
-                  <td>{section.fromDistance.toFixed(1)} - {section.toDistance.toFixed(1)}</td>
                   <td>{section.width.toFixed(2)}</td>
                   <td>{section.averageDepth.toFixed(2)}</td>
                   <td>{section.averageVelocity.toFixed(2)}</td>

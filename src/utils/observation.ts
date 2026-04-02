@@ -48,12 +48,12 @@ export type ObservationSummary = {
 
 function round(value: number, digits: number) {
   const factor = 10 ** digits
-  return Math.round(value * factor) / factor
+  return Math.round(Number((value * factor).toPrecision(12))) / factor
 }
 
 /** 流速専用: 小数第2位で四捨五入（4以下切り捨て、5以上切り上げ） */
 function roundVelocity(value: number) {
-  return Math.round(value * 100) / 100
+  return Math.round(Number((value * 100).toPrecision(12))) / 100
 }
 
 function parseNumber(value: string) {
