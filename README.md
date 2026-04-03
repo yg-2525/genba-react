@@ -1,6 +1,20 @@
-# 現場ログ管理アプリ
+# 現場観測管理システム
 
-土木・測量現場での観測データ（水位・流速・断面積）を記録・管理する Web アプリです。
+![Tests](https://img.shields.io/badge/tests-34%20passed-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-47%25-yellow)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Deploy](https://img.shields.io/badge/deploy-GitHub%20Pages-purple)
+
+> **[デモサイト](https://yg-2525.github.io/genba-react/)** | **[リポジトリ](https://github.com/yg-2525/genba-react)**
+
+土木・測量現場での流量観測データ（水位・流速・断面積）を記録・計算・管理する Web アプリです。
+
+## スクリーンショット
+
+<!-- デモサイトのキャプチャ画像を docs/ に保存して貼り替えてください -->
+<!-- 例: ![入力画面](docs/screenshot-input.png) -->
+<!-- 例: ![統計・グラフ](docs/screenshot-stats.png) -->
+<!-- 例: ![データ一覧](docs/screenshot-list.png) -->
 
 ## 概要
 
@@ -34,21 +48,20 @@
 - **比較機能** — 2 件のデータを選択して差分（水位・流速・流量の差）を表示
 - **統計情報** — 件数・平均水位・平均流速・平均流量を自動集計
 - **グラフ表示** — 全データの観測値推移を折れ線グラフで可視化
-- **CSV エクスポート** — 全データを CSV ファイルでダウンロード
+- **CSV エクスポート** — 全データを CSV ファイルでダウンロード（BOM 付き UTF-8 で Excel 文字化け防止）
 - **PWA 対応** — Service Worker によるオフラインキャッシュ。スマホのホーム画面に追加可能
+- **ダークモード** — `prefers-color-scheme` に対応し自動切り替え
+- **レスポンシブ** — 960px / 640px ブレークポイントでモバイル対応
 
-## セキュリティ対策
+## セキュリティ・アクセシビリティ
 
 - **CSP (Content-Security-Policy)** — 許可するスクリプト・接続先を制限
 - **localStorage ランタイム検証** — 不正データ混入時に安全にフォールバック
 - **API エラーサニタイズ** — 外部 API の生エラーをユーザーに表示しない
 - **ErrorBoundary** — 予期しないクラッシュ時に再読み込み画面を表示
 - **Cloudflare Worker** — オリジン制限・パス制限・メソッド制限を実装
-
-## 公開リンク
-
-- GitHub: https://github.com/yg-2525/genba-react
-- Demo: https://yg-2525.github.io/genba-react/
+- **aria-modal / aria-label** — モーダル・ボタンにアクセシビリティ属性を付与
+- **OGP メタタグ** — SNS 共有時にタイトル・説明が表示される
 
 ## 工夫した点
 
@@ -92,12 +105,23 @@ Vitest + React Testing Library で 34 テストを実装。入力フォーム・
 npm test -- --run   # テスト実行
 ```
 
-## 起動方法
+## テスト
 
 ```bash
-npm install
-npm run dev
+npm test -- --run          # テスト実行
+npm test -- --run --coverage  # カバレッジ付き
 ```
+
+## デプロイ
+
+```bash
+npm run build
+npx gh-pages -d dist
+```
+
+## ライセンス
+
+MIT
 
 ブラウザで `http://localhost:5173` を開いてください。
 
