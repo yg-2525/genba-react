@@ -83,9 +83,9 @@ export default function DataList({
                 )}
               </div>
               <div className="item-buttons">
-                <button onClick={() => onEdit(index)}>✏️ 編集</button>
-                <button onClick={() => onCompare(index)}>🔄 比較</button>
-                <button className="btn-danger" onClick={() => handleDeleteClick(index)}>🗑️ 削除</button>
+                <button aria-label={`${data.name}を編集`} onClick={() => onEdit(index)}>✏️ 編集</button>
+                <button aria-label={`${data.name}を比較`} onClick={() => onCompare(index)}>🔄 比較</button>
+                <button className="btn-danger" aria-label={`${data.name}を削除`} onClick={() => handleDeleteClick(index)}>🗑️ 削除</button>
               </div>
             </li>
           ))}

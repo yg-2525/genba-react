@@ -22,9 +22,9 @@ export default function CompareModal({ data1, data2, onSaveNotes, onClose }: Pro
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <h2>比較結果</h2>
+    <div className="modal-overlay" role="presentation" onClick={onClose}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="compare-modal-title" onClick={e => e.stopPropagation()}>
+        <h2 id="compare-modal-title">比較結果</h2>
         <table className="compare-table">
           <thead>
             <tr>

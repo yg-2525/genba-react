@@ -74,9 +74,9 @@ export default function EditModal({ data, onSave, onCancel }: Props) {
   }
 
   return (
-    <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <h2>データ編集</h2>
+    <div className="modal-overlay" role="presentation" onClick={onCancel}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title" onClick={e => e.stopPropagation()}>
+        <h2 id="edit-modal-title">データ編集</h2>
         <div className="form-grid">
           <input
             placeholder="現場名 *"
