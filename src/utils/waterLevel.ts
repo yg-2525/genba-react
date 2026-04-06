@@ -163,8 +163,17 @@ function pickBestStation(keyword: string, list: RiverSearchItem[]) {
   return includes ?? list[0] ?? null
 }
 
+function validateSiteName(name: string): string {
+  const trimmed = name.trim()
+  if (!trimmed || trimmed.length > 100) {
+    throw new Error('観測所名は1〜100文字で入力してください')
+  }
+  return trimmed
+}
+
 async function fetchWaterLevelDirectly(siteName: string, dateTime: string) {
-  const searchUrl = `${WATER_LEVEL_SOURCE_URL}/api/search/list/${encodeURIComponent(siteName)}/obsNm,rsysNm,rvrNm,obsAdr/4`
+  const safeName = validateSiteName(siteName)
+  const searchUrl = `${WATER_LEVEL_SOURCE_URL}/api/search/list/${encodeURIComponent(safeName)}/obsNm,rsysNm,rvrNm,obsAdr/4`
   const searchResponse = await fetch(searchUrl)
   if (!searchResponse.ok) {
     throw new Error(`観測所検索に失敗しました (${searchResponse.status})`)
@@ -203,7 +212,8 @@ async function fetchWaterLevelDirectly(siteName: string, dateTime: string) {
 }
 
 async function fetchStationByName(siteName: string) {
-  const searchUrl = `${WATER_LEVEL_SOURCE_URL}/api/search/list/${encodeURIComponent(siteName)}/obsNm,rsysNm,rvrNm,obsAdr/4`
+  const safeName = validateSiteName(siteName)
+  const searchUrl = `${WATER_LEVEL_SOURCE_URL}/api/search/list/${encodeURIComponent(safeName)}/obsNm,rsysNm,rvrNm,obsAdr/4`
   const searchResponse = await fetch(searchUrl)
   if (!searchResponse.ok) {
     throw new Error(`観測所検索に失敗しました (${searchResponse.status})`)

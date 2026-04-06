@@ -81,15 +81,25 @@ function App() {
     }
   }
 
+  function escapeCSV(field: string): string {
+    let val = String(field)
+    // フォーミュラインジェクション防止: =, +, -, @, \t, \r で始まる値にプレフィックス
+    if (/^[=+\-@\t\r]/.test(val)) {
+      val = "'" + val
+    }
+    // ダブルクォート内にダブルクォートがあればエスケープ
+    return '"' + val.replace(/"/g, '""') + '"'
+  }
+
   function exportCSV(siteName?: string) {
     const target = siteName ? dataList.filter(d => d.name === siteName) : dataList
     if (target.length === 0) {
       showToast('エクスポートするデータがありません', 'error')
       return
     }
-    let csv = '現場名,日付,開始時間,終了時間,作業内容,メモ,水位(m),流速(m/s),断面積(㎡),流量,比較メモ\n'
+    let csv = '現場名,日付,開始時間,終了時間,作業内容,メモ,水位(m),流速(m/s),断面積(㎡),流量(㎥/s),比較メモ\n'
     target.forEach(d => {
-      csv += `"${d.name}",${d.date},${d.startTime ?? ''},${d.endTime ?? ''},"${d.work}","${d.memo}",${d.waterLevel},${d.velocity},${d.area},${d.flow},"${d.compareNotes}"\n`
+      csv += `${escapeCSV(d.name)},${escapeCSV(d.date)},${escapeCSV(d.startTime ?? '')},${escapeCSV(d.endTime ?? '')},${escapeCSV(d.work)},${escapeCSV(d.memo)},${d.waterLevel},${d.velocity},${d.area},${d.flow},${escapeCSV(d.compareNotes)}\n`
     })
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF])
     const blob = new Blob([bom, csv], { type: 'text/csv;charset=utf-8;' })
