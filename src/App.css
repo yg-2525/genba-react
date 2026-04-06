@@ -494,6 +494,13 @@ button:active {
   transform: translateY(0);
 }
 
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
 .btn-primary {
   background: linear-gradient(135deg, var(--accent), var(--accent-hover, var(--accent)));
   color: #fff;

@@ -41,7 +41,7 @@ describe('InputForm', () => {
     expect(arg.flow).toBe('6.00') // 2.0 × 3.0
   })
 
-  it('追加後にフォームがリセットされる', async () => {
+  it('追加後に計算結果がリセットされ基本情報は保持される', async () => {
     const onAdd = vi.fn()
     renderInputForm(onAdd)
 
@@ -54,6 +54,10 @@ describe('InputForm', () => {
 
     await userEvent.click(screen.getByText('追加'))
 
-    expect(nameInput).toHaveValue('')
+    // 現場名・日付・水位は保持される
+    expect(nameInput).toHaveValue('テスト現場')
+    // 流速・断面積はクリアされる
+    expect(screen.getByLabelText('流速（m/s）')).toHaveValue(null)
+    expect(screen.getByLabelText('断面積（㎡）')).toHaveValue(null)
   })
 })

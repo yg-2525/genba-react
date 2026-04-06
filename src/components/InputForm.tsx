@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { GembaData } from '../types'
 import { useToast } from '../contexts/ToastContext'
 import ObservationCalculator from './ObservationCalculator'
@@ -27,6 +27,13 @@ export default function InputForm({ onAdd }: Props) {
   const [isFetchingWaterLevel, setIsFetchingWaterLevel] = useState(false)
   const { showToast } = useToast()
 
+  // Enter key navigation refs
+  const nameRef = useRef<HTMLInputElement>(null)
+  const startWLRef = useRef<HTMLInputElement>(null)
+  const endWLRef = useRef<HTMLInputElement>(null)
+  const velRef = useRef<HTMLInputElement>(null)
+  const areaRef = useRef<HTMLInputElement>(null)
+
   const startWL = Number(form.startWaterLevel)
   const endWL = Number(form.endWaterLevel)
   const hasStartWL = form.startWaterLevel !== '' && Number.isFinite(startWL)
@@ -37,6 +44,17 @@ export default function InputForm({ onAdd }: Props) {
   const manualFlow = Number(form.velocity) * Number(form.area)
   const calculatedFlow = form.flow ? Number(form.flow) : manualFlow
   const hasCalculatedFlow = !Number.isNaN(calculatedFlow) && Number.isFinite(calculatedFlow)
+
+  function focusNext(nextRef: React.RefObject<HTMLInputElement | null>) {
+    nextRef.current?.focus()
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent, nextRef?: React.RefObject<HTMLInputElement | null>) {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (nextRef) focusNext(nextRef)
+    }
+  }
 
   function applyCalculatedValues(values: { velocity: number; area: number; flow: number }) {
     setForm(prev => ({
@@ -75,7 +93,8 @@ export default function InputForm({ onAdd }: Props) {
       flow: form.flow || (vel * ar).toFixed(2),
       compareNotes: '',
     })
-    setForm(emptyForm)
+    // 現場名・日付・時間・水位は保持し、計算結果(流速・面積・流量)のみクリア
+    setForm(prev => ({ ...prev, velocity: '', area: '', flow: '' }))
   }
 
   async function handleFetchWaterLevel() {
@@ -123,9 +142,11 @@ export default function InputForm({ onAdd }: Props) {
           <div className={`floating-field${form.name ? ' filled' : ''}`}>
             <input
               id="field-name"
+              ref={nameRef}
               placeholder=" "
               value={form.name}
               onChange={e => setForm({ ...form, name: e.target.value })}
+              onKeyDown={e => handleKeyDown(e, startWLRef)}
             />
             <label htmlFor="field-name">現場名 *</label>
           </div>
@@ -148,11 +169,13 @@ export default function InputForm({ onAdd }: Props) {
             <div className={`floating-field${form.startWaterLevel ? ' filled' : ''}`}>
               <input
                 id="field-start-wl"
+                ref={startWLRef}
                 type="number"
                 step="any"
                 placeholder=" "
                 value={form.startWaterLevel}
                 onChange={e => setForm({ ...form, startWaterLevel: e.target.value })}
+                onKeyDown={e => handleKeyDown(e, endWLRef)}
               />
               <label htmlFor="field-start-wl">開始水位（m）</label>
             </div>
@@ -167,11 +190,13 @@ export default function InputForm({ onAdd }: Props) {
             <div className={`floating-field${form.endWaterLevel ? ' filled' : ''}`}>
               <input
                 id="field-end-wl"
+                ref={endWLRef}
                 type="number"
                 step="any"
                 placeholder=" "
                 value={form.endWaterLevel}
                 onChange={e => setForm({ ...form, endWaterLevel: e.target.value })}
+                onKeyDown={e => handleKeyDown(e, velRef)}
               />
               <label htmlFor="field-end-wl">終了水位（m）</label>
             </div>
@@ -209,22 +234,26 @@ export default function InputForm({ onAdd }: Props) {
           <div className={`floating-field${form.velocity ? ' filled' : ''}`}>
             <input
               id="field-vel"
+              ref={velRef}
               type="number"
               step="any"
               placeholder=" "
               value={form.velocity}
               onChange={e => setForm({ ...form, velocity: e.target.value, flow: '' })}
+              onKeyDown={e => handleKeyDown(e, areaRef)}
             />
             <label htmlFor="field-vel">流速（m/s）</label>
           </div>
           <div className={`floating-field${form.area ? ' filled' : ''}`}>
             <input
               id="field-area"
+              ref={areaRef}
               type="number"
               step="any"
               placeholder=" "
               value={form.area}
               onChange={e => setForm({ ...form, area: e.target.value, flow: '' })}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleSubmit() } }}
             />
             <label htmlFor="field-area">断面積（㎡）</label>
           </div>
@@ -235,7 +264,10 @@ export default function InputForm({ onAdd }: Props) {
         </div>
       </div>
 
-      <button className="btn-primary" onClick={handleSubmit}>追加</button>
+      <div className="form-actions">
+        <button className="btn-primary" onClick={handleSubmit}>追加</button>
+        <button className="btn-secondary" type="button" onClick={() => setForm(emptyForm)}>入力欄をクリア</button>
+      </div>
     </section>
   )
 }
