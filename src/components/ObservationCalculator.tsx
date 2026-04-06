@@ -8,7 +8,7 @@ import {
 
 type Props = {
   onApply: (values: { velocity: number; area: number; flow: number }) => void
-  onClear?: () => void
+  onClearAll?: () => void
 }
 
 const defaultSettings = {
@@ -30,13 +30,18 @@ function calcInstrumentDepth(depthStr: string): string {
   return (d * 0.6).toFixed(2)
 }
 
-export default function ObservationCalculator({ onApply, onClear }: Props) {
+export default function ObservationCalculator({ onApply, onClearAll }: Props) {
   const [settings, setSettings] = useState(defaultSettings)
   const [rows, setRows] = useState<ObservationInputRow[]>([
     createObservationRow(),
     createObservationRow(),
     createObservationRow(),
   ])
+
+  function resetCalculator() {
+    setSettings(defaultSettings)
+    setRows([createObservationRow(), createObservationRow(), createObservationRow()])
+  }
 
   const numericSettings = useMemo<CalculationSettings>(() => ({
     coefficient: Number(settings.coefficient) || 0,
@@ -158,9 +163,12 @@ export default function ObservationCalculator({ onApply, onClear }: Props) {
         >
           計算結果を反映
         </button>
-        {onClear && (
-          <button type="button" className="btn-secondary" onClick={onClear}>
-            入力欄をクリア
+        <button type="button" className="btn-secondary" onClick={resetCalculator}>
+          計算クリア
+        </button>
+        {onClearAll && (
+          <button type="button" className="btn-danger" onClick={() => { resetCalculator(); onClearAll() }}>
+            一括クリア
           </button>
         )}
       </div>

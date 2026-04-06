@@ -225,7 +225,11 @@ export default function InputForm({ onAdd }: Props) {
         </div>
       </div>
 
-      <ObservationCalculator onApply={applyCalculatedValues} onClear={() => setForm(emptyForm)} />
+      <div className="form-actions" style={{ justifyContent: 'flex-start' }}>
+        <button className="btn-secondary" type="button" onClick={() => setForm(emptyForm)}>入力欄クリア</button>
+      </div>
+
+      <ObservationCalculator onApply={applyCalculatedValues} onClearAll={() => setForm(emptyForm)} />
 
       {/* 計算結果 */}
       <div className="result-panel">
