@@ -144,6 +144,8 @@ function App() {
         <p className="app-description">本アプリは流量観測業務における記録・計算・比較を目的として作成しました</p>
       </header>
 
+      <SyncPanel dataList={dataList} onDownload={data => setDataList(data)} />
+
       <InputForm onAdd={data => setDataList(prev => [...prev, data])} />
 
       <SearchFilter
@@ -184,8 +186,6 @@ function App() {
           onCancel={() => setEditingId(null)}
         />
       )}
-
-      <SyncPanel dataList={dataList} onDownload={data => setDataList(data)} />
 
       {compareResult && (
         <CompareModal
