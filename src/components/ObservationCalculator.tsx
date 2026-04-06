@@ -8,6 +8,7 @@ import {
 
 type Props = {
   onApply: (values: { velocity: number; area: number; flow: number }) => void
+  onClear?: () => void
 }
 
 const defaultSettings = {
@@ -29,7 +30,7 @@ function calcInstrumentDepth(depthStr: string): string {
   return (d * 0.6).toFixed(2)
 }
 
-export default function ObservationCalculator({ onApply }: Props) {
+export default function ObservationCalculator({ onApply, onClear }: Props) {
   const [settings, setSettings] = useState(defaultSettings)
   const [rows, setRows] = useState<ObservationInputRow[]>([
     createObservationRow(),
@@ -157,6 +158,11 @@ export default function ObservationCalculator({ onApply }: Props) {
         >
           計算結果を反映
         </button>
+        {onClear && (
+          <button type="button" className="btn-secondary" onClick={onClear}>
+            入力欄をクリア
+          </button>
+        )}
       </div>
 
       <div className="stats-grid calculator-summary">

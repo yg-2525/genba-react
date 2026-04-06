@@ -225,7 +225,7 @@ export default function InputForm({ onAdd }: Props) {
         </div>
       </div>
 
-      <ObservationCalculator onApply={applyCalculatedValues} />
+      <ObservationCalculator onApply={applyCalculatedValues} onClear={() => setForm(emptyForm)} />
 
       {/* 計算結果 */}
       <div className="result-panel">
@@ -266,7 +266,6 @@ export default function InputForm({ onAdd }: Props) {
 
       <div className="form-actions">
         <button className="btn-primary" onClick={handleSubmit}>追加</button>
-        <button className="btn-secondary" type="button" onClick={() => setForm(emptyForm)}>入力欄をクリア</button>
       </div>
     </section>
   )
