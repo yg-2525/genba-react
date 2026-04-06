@@ -16,4 +16,4 @@ enabled = true
 #   npx wrangler deploy -c wrangler.sync.toml
 [[kv_namespaces]]
 binding = "GENBA_SYNC"
-id = "YOUR_KV_NAMESPACE_ID"
+id = "6d495767516a491585d551897f5435ca"
