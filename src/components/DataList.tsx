@@ -64,7 +64,7 @@ export default function DataList({
                   </div>
                   <div className="item-metric">
                     <span>流量</span>
-                    <strong>{data.flow}</strong>
+                    <strong>{data.flow} ㎥/s</strong>
                   </div>
                 </div>
                 {(data.work || data.memo || data.compareNotes) && (

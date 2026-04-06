@@ -17,20 +17,32 @@ export default function StatsPanel({ dataList, onExportCSV }: Props) {
 
   if (dataList.length === 0) return null
 
+  const filtered = csvSite ? dataList.filter(d => d.name === csvSite) : dataList
+
   const avg = (arr: number[]) =>
     arr.reduce((s, x) => s + x, 0) / arr.length
 
-  const avgWaterLevel = avg(dataList.map(d => d.waterLevel)).toFixed(2)
-  const avgVelocity = avg(dataList.map(d => d.velocity)).toFixed(2)
-  const avgFlow = avg(dataList.map(d => parseFloat(d.flow))).toFixed(2)
+  const avgWaterLevel = avg(filtered.map(d => d.waterLevel)).toFixed(2)
+  const avgVelocity = avg(filtered.map(d => d.velocity)).toFixed(2)
+  const avgFlow = avg(filtered.map(d => parseFloat(d.flow))).toFixed(2)
 
   return (
     <section className="card">
       <h2>統計情報</h2>
+      {siteNames.length > 1 && (
+        <div className="site-filter-row">
+          <select value={csvSite} onChange={e => setCsvSite(e.target.value)}>
+            <option value="">全地点</option>
+            {siteNames.map(name => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="stats-grid">
         <div className="stat-item">
           <span>件数</span>
-          <strong>{dataList.length}</strong>
+          <strong>{filtered.length}</strong>
         </div>
         <div className="stat-item">
           <span>平均水位</span>
@@ -42,18 +54,10 @@ export default function StatsPanel({ dataList, onExportCSV }: Props) {
         </div>
         <div className="stat-item">
           <span>平均流量</span>
-          <strong>{avgFlow}</strong>
+          <strong>{avgFlow} ㎥/s</strong>
         </div>
       </div>
       <div className="csv-export-row">
-        {siteNames.length > 1 && (
-          <select value={csvSite} onChange={e => setCsvSite(e.target.value)}>
-            <option value="">全地点</option>
-            {siteNames.map(name => (
-              <option key={name} value={name}>{name}</option>
-            ))}
-          </select>
-        )}
         <button className="btn-secondary" onClick={() => onExportCSV(csvSite || undefined)}>
           CSV エクスポート
         </button>

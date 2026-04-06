@@ -561,6 +561,19 @@ button:active {
   color: var(--accent);
 }
 
+.site-filter-row {
+  margin-bottom: 0.5rem;
+}
+
+.site-filter-row select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
 .csv-export-row {
   display: flex;
   align-items: center;

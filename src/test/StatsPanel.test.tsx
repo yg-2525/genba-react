@@ -29,7 +29,7 @@ describe('StatsPanel', () => {
   it('平均流量を正しく計算して表示する', () => {
     // (6.00 + 20.00) / 2 = 13.00
     render(<StatsPanel dataList={sampleData} onExportCSV={vi.fn()} />)
-    expect(screen.getByText('13.00')).toBeInTheDocument()
+    expect(screen.getByText('13.00 ㎥/s')).toBeInTheDocument()
   })
 
   it('CSV エクスポートボタンを押すと onExportCSV が呼ばれる', async () => {
