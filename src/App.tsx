@@ -81,13 +81,14 @@ function App() {
     }
   }
 
-  function exportCSV() {
-    if (dataList.length === 0) {
+  function exportCSV(siteName?: string) {
+    const target = siteName ? dataList.filter(d => d.name === siteName) : dataList
+    if (target.length === 0) {
       showToast('エクスポートするデータがありません', 'error')
       return
     }
     let csv = '現場名,日付,開始時間,終了時間,作業内容,メモ,水位(m),流速(m/s),断面積(㎡),流量,比較メモ\n'
-    dataList.forEach(d => {
+    target.forEach(d => {
       csv += `"${d.name}",${d.date},${d.startTime ?? ''},${d.endTime ?? ''},"${d.work}","${d.memo}",${d.waterLevel},${d.velocity},${d.area},${d.flow},"${d.compareNotes}"\n`
     })
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF])
@@ -95,7 +96,8 @@ function App() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `genba_log_${new Date().toISOString().split('T')[0]}.csv`
+    const suffix = siteName ? siteName : 'all'
+    link.download = `genba_log_${suffix}_${new Date().toISOString().split('T')[0]}.csv`
     link.click()
     URL.revokeObjectURL(url)
   }

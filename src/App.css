@@ -561,6 +561,21 @@ button:active {
   color: var(--accent);
 }
 
+.csv-export-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.csv-export-row select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--bg-card, var(--bg));
+  color: var(--text);
+}
+
 /* ===== データ一覧 ===== */
 .data-list {
   list-style: none;

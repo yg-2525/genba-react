@@ -1,11 +1,20 @@
+import { useMemo, useState } from 'react'
 import type { GembaData } from '../types'
 
 type Props = {
   dataList: GembaData[]
-  onExportCSV: () => void
+  onExportCSV: (siteName?: string) => void
 }
 
 export default function StatsPanel({ dataList, onExportCSV }: Props) {
+  const [csvSite, setCsvSite] = useState('')
+
+  const siteNames = useMemo(() => {
+    const names = [...new Set(dataList.map(d => d.name))]
+    names.sort()
+    return names
+  }, [dataList])
+
   if (dataList.length === 0) return null
 
   const avg = (arr: number[]) =>
@@ -36,7 +45,19 @@ export default function StatsPanel({ dataList, onExportCSV }: Props) {
           <strong>{avgFlow}</strong>
         </div>
       </div>
-      <button className="btn-secondary" onClick={onExportCSV}>CSV エクスポート</button>
+      <div className="csv-export-row">
+        {siteNames.length > 1 && (
+          <select value={csvSite} onChange={e => setCsvSite(e.target.value)}>
+            <option value="">全地点</option>
+            {siteNames.map(name => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+        )}
+        <button className="btn-secondary" onClick={() => onExportCSV(csvSite || undefined)}>
+          CSV エクスポート
+        </button>
+      </div>
     </section>
   )
 }
