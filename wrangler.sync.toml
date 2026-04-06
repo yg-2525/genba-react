@@ -1,0 +1,19 @@
+name = "genba-sync"
+main = "worker/genba-sync.js"
+compatibility_date = "2024-01-01"
+
+[observability]
+enabled = true
+
+# KV 名前空間バインディング
+# デプロイ前に Cloudflare ダッシュボードで KV 名前空間を作成し、
+# 下記の id を実際の名前空間 ID に差し替えてください。
+#
+# 作成コマンド:
+#   npx wrangler kv namespace create GENBA_SYNC
+#
+# デプロイ:
+#   npx wrangler deploy -c wrangler.sync.toml
+[[kv_namespaces]]
+binding = "GENBA_SYNC"
+id = "YOUR_KV_NAMESPACE_ID"

@@ -24,8 +24,8 @@ self.addEventListener('fetch', (event) => {
   const { request } = event
   if (request.method !== 'GET') return
 
-  // API calls: network only
-  if (request.url.includes('river.go.jp') || request.url.includes('river-proxy')) {
+  // API calls: network only (キャッシュしない)
+  if (request.url.includes('river.go.jp') || request.url.includes('river-proxy') || request.url.includes('genba-sync')) {
     return
   }
 

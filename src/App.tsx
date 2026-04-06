@@ -7,6 +7,7 @@ import DataList from './components/DataList'
 import ChartView from './components/ChartView'
 import EditModal from './components/EditModal'
 import CompareModal from './components/CompareModal'
+import SyncPanel from './components/SyncPanel'
 import { useToast } from './contexts/ToastContext'
 import './App.css'
 
@@ -158,6 +159,8 @@ function App() {
           onCancel={() => setEditingId(null)}
         />
       )}
+
+      <SyncPanel dataList={dataList} onDownload={data => setDataList(data)} />
 
       {compareResult && (
         <CompareModal
