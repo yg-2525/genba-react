@@ -26,6 +26,7 @@ export default function InputForm({ onAdd }: Props) {
   const [form, setForm] = useState(emptyForm)
   const [isFetchingWaterLevel, setIsFetchingWaterLevel] = useState(false)
   const { showToast } = useToast()
+  const calcResetRef = useRef<(() => void) | null>(null)
 
   // Enter key navigation refs
   const nameRef = useRef<HTMLInputElement>(null)
@@ -226,10 +227,10 @@ export default function InputForm({ onAdd }: Props) {
       </div>
 
       <div className="form-actions" style={{ justifyContent: 'flex-start' }}>
-        <button className="btn-secondary" type="button" onClick={() => setForm(emptyForm)}>入力欄クリア</button>
+        <button className="btn-secondary" type="button" onClick={() => setForm(emptyForm)}>入力欄リセット</button>
       </div>
 
-      <ObservationCalculator onApply={applyCalculatedValues} onClearAll={() => setForm(emptyForm)} />
+      <ObservationCalculator onApply={applyCalculatedValues} resetRef={calcResetRef} />
 
       {/* 計算結果 */}
       <div className="result-panel">
@@ -270,6 +271,7 @@ export default function InputForm({ onAdd }: Props) {
 
       <div className="form-actions">
         <button className="btn-primary" onClick={handleSubmit}>追加</button>
+        <button className="btn-danger" type="button" onClick={() => { setForm(emptyForm); calcResetRef.current?.() }}>一括リセット</button>
       </div>
     </section>
   )
