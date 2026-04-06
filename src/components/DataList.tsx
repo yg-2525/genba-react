@@ -9,6 +9,7 @@ type Props = {
   onEdit: (index: number) => void
   onCompare: (index: number) => void
   onDelete: (index: number) => void
+  onBulkDelete: (ids: number[]) => void
 }
 
 export default function DataList({
@@ -17,8 +18,12 @@ export default function DataList({
   onEdit,
   onCompare,
   onDelete,
+  onBulkDelete,
 }: Props) {
   const [confirmIndex, setConfirmIndex] = useState<number | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const [bulkMode, setBulkMode] = useState(false)
+  const [confirmBulk, setConfirmBulk] = useState(false)
   const isMobile = useIsMobile()
 
   function handleDeleteClick(index: number) {
@@ -32,15 +37,83 @@ export default function DataList({
     }
   }
 
+  function toggleSelect(id: number) {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function toggleAll() {
+    if (selectedIds.size === filteredList.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(filteredList.map(d => d.id)))
+    }
+  }
+
+  function handleBulkDelete() {
+    onBulkDelete([...selectedIds])
+    setSelectedIds(new Set())
+    setBulkMode(false)
+    setConfirmBulk(false)
+  }
+
+  function exitBulkMode() {
+    setBulkMode(false)
+    setSelectedIds(new Set())
+    setConfirmBulk(false)
+  }
+
   return (
     <section className="card">
-      <h2>データ一覧</h2>
+      <div className="data-list-header">
+        <h2>データ一覧</h2>
+        {filteredList.length > 0 && (
+          bulkMode ? (
+            <div className="bulk-actions">
+              <button className="btn-secondary btn-sm" onClick={toggleAll}>
+                {selectedIds.size === filteredList.length ? '全解除' : '全選択'}
+              </button>
+              {confirmBulk ? (
+                <>
+                  <span className="bulk-confirm-text">{selectedIds.size}件を削除しますか？</span>
+                  <button className="btn-danger btn-sm" onClick={handleBulkDelete}>削除する</button>
+                  <button className="btn-secondary btn-sm" onClick={() => setConfirmBulk(false)}>キャンセル</button>
+                </>
+              ) : (
+                <button
+                  className="btn-danger btn-sm"
+                  disabled={selectedIds.size === 0}
+                  onClick={() => setConfirmBulk(true)}
+                >
+                  {selectedIds.size}件を削除
+                </button>
+              )}
+              <button className="btn-secondary btn-sm" onClick={exitBulkMode}>戻る</button>
+            </div>
+          ) : (
+            <button className="btn-secondary btn-sm" onClick={() => setBulkMode(true)}>選択削除</button>
+          )
+        )}
+      </div>
       {filteredList.length === 0 ? (
         <p className="empty-message">データがありません</p>
       ) : (
         <ul className="data-list">
           {filteredList.map((data, index) => (
             <li key={data.id} className={compareFirstIndex === index ? 'selected' : ''}>
+              {bulkMode && (
+                <label className="bulk-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(data.id)}
+                    onChange={() => toggleSelect(data.id)}
+                  />
+                </label>
+              )}
               <div className="item-content">
                 <div className="item-header-row">
                   <span className="item-name">{data.name}</span>

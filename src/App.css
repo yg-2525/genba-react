@@ -658,6 +658,49 @@ button:active {
 }
 
 /* ===== データ一覧 ===== */
+.data-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.data-list-header h2 {
+  margin: 0;
+}
+
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bulk-confirm-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+.bulk-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px 8px 12px;
+  cursor: pointer;
+}
+
+.bulk-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
 .data-list {
   list-style: none;
   padding: 0;

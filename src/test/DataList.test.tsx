@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+﻿import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import DataList from '../components/DataList'
@@ -18,6 +18,7 @@ describe('DataList', () => {
         onEdit={vi.fn()}
         onCompare={vi.fn()}
         onDelete={vi.fn()}
+        onBulkDelete={vi.fn()}
       />
     )
     expect(screen.getByText('データがありません')).toBeInTheDocument()
@@ -31,6 +32,7 @@ describe('DataList', () => {
         onEdit={vi.fn()}
         onCompare={vi.fn()}
         onDelete={vi.fn()}
+        onBulkDelete={vi.fn()}
       />
     )
     expect(screen.getByText('A川')).toBeInTheDocument()
@@ -45,6 +47,7 @@ describe('DataList', () => {
         onEdit={vi.fn()}
         onCompare={vi.fn()}
         onDelete={vi.fn()}
+        onBulkDelete={vi.fn()}
       />
     )
     const deleteButtons = screen.getAllByText('🗑️ 削除')
@@ -61,6 +64,7 @@ describe('DataList', () => {
         onEdit={vi.fn()}
         onCompare={vi.fn()}
         onDelete={onDelete}
+        onBulkDelete={vi.fn()}
       />
     )
     const deleteButtons = screen.getAllByText('🗑️ 削除')
@@ -77,6 +81,7 @@ describe('DataList', () => {
         onEdit={vi.fn()}
         onCompare={vi.fn()}
         onDelete={vi.fn()}
+        onBulkDelete={vi.fn()}
       />
     )
     const deleteButtons = screen.getAllByText('🗑️ 削除')

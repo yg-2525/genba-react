@@ -62,6 +62,12 @@ function App() {
     setDataList(prev => prev.filter(d => d.id !== id))
   }
 
+  function handleBulkDelete(ids: number[]) {
+    const idSet = new Set(ids)
+    setDataList(prev => prev.filter(d => !idSet.has(d.id)))
+    showToast(`${ids.length}件のデータを削除しました`, 'success')
+  }
+
   function handleCompare(index: number) {
     if (compareFirst === null) {
       setCompareFirst(index)
@@ -98,7 +104,25 @@ function App() {
       showToast('エクスポートするデータがありません', 'error')
       return
     }
-    let csv = '現場名,日付,開始時間,終了時間,作業内容,メモ,水位(m),流速(m/s),断面積(㎡),流量(㎥/s),比較メモ\n'
+
+    // 統計情報を計算
+    const avg = (arr: number[]) => arr.length ? arr.reduce((s, x) => s + x, 0) / arr.length : 0
+    const avgWL = avg(target.map(d => d.waterLevel)).toFixed(2)
+    const avgVel = avg(target.map(d => d.velocity)).toFixed(2)
+    const avgFlow = avg(target.map(d => parseFloat(d.flow))).toFixed(2)
+
+    let csv = ''
+    // 統計情報セクション
+    csv += '統計情報\n'
+    csv += `対象,${escapeCSV(siteName ?? '全地点')}\n`
+    csv += `件数,${target.length}\n`
+    csv += `平均水位(m),${avgWL}\n`
+    csv += `平均流速(m/s),${avgVel}\n`
+    csv += `平均流量(㎥/s),${avgFlow}\n`
+    csv += '\n'
+    // データセクション
+    csv += '観測データ\n'
+    csv += '現場名,日付,開始時間,終了時間,作業内容,メモ,水位(m),流速(m/s),断面積(㎡),流量(㎥/s),比較メモ\n'
     target.forEach(d => {
       csv += `${escapeCSV(d.name)},${escapeCSV(d.date)},${escapeCSV(d.startTime ?? '')},${escapeCSV(d.endTime ?? '')},${escapeCSV(d.work)},${escapeCSV(d.memo)},${d.waterLevel},${d.velocity},${d.area},${d.flow},${escapeCSV(d.compareNotes)}\n`
     })
@@ -147,6 +171,7 @@ function App() {
         onEdit={index => setEditingId(filteredList[index].id)}
         onCompare={handleCompare}
         onDelete={handleDelete}
+        onBulkDelete={handleBulkDelete}
       />
 
       {editingId !== null && editingData && (
