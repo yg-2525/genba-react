@@ -85,10 +85,8 @@ async function handlePut(request, env, key, origin) {
     updatedAt: new Date().toISOString(),
   }
 
-  // 90日間の TTL（expirationTtl）
-  await env.GENBA_SYNC.put(`sync:${key}`, JSON.stringify(payload), {
-    expirationTtl: 60 * 60 * 24 * 90,
-  })
+  // KV に保存（TTL なし = 無期限保存、過年度比較にも対応）
+  await env.GENBA_SYNC.put(`sync:${key}`, JSON.stringify(payload))
 
   return jsonResponse(200, { ok: true, updatedAt: payload.updatedAt, count: body.dataList.length }, origin)
 }
