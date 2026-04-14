@@ -1,5 +1,5 @@
 ﻿import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import DataList from '../components/DataList'
 import type { GembaData } from '../types'
@@ -70,7 +70,7 @@ describe('DataList', () => {
     const deleteButtons = screen.getAllByText('🗑️ 削除')
     await userEvent.click(deleteButtons[0])
     await userEvent.click(screen.getByText('削除する'))
-    expect(onDelete).toHaveBeenCalledWith(0)
+    await waitFor(() => expect(onDelete).toHaveBeenCalledWith(0))
   })
 
   it('確認 UI の「キャンセル」を押すと確認 UI が消える', async () => {

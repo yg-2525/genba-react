@@ -11,7 +11,10 @@
  * 無料枠: 100,000 リクエスト/日
  */
 
-const ALLOWED_ORIGIN = 'https://yg-2525.github.io'
+const ALLOWED_ORIGINS = [
+  'https://yg-2525.github.io',
+  'https://genba-react.pages.dev',
+]
 const UPSTREAM = 'https://www.river.go.jp'
 
 // 許可するパスのプレフィックス（river.go.jp の API パスのみ通す）
@@ -65,14 +68,14 @@ export default {
 }
 
 function corsHeaders(origin) {
-  // GitHub Pages のオリジンまたは localhost のみ許可
+  // GitHub Pages, Cloudflare Pages, localhost のみ許可
   const allowed =
-    origin === ALLOWED_ORIGIN ||
+    ALLOWED_ORIGINS.includes(origin) ||
     origin.startsWith('http://localhost:') ||
     origin.startsWith('http://127.0.0.1:')
 
   return {
-    'Access-Control-Allow-Origin': allowed ? origin : ALLOWED_ORIGIN,
+    'Access-Control-Allow-Origin': allowed ? origin : ALLOWED_ORIGINS[0],
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',

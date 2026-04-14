@@ -45,7 +45,7 @@ export default function ChartView({ dataList }: Props) {
         tension: 0.4,
       },
       {
-        label: '流量',
+        label: '流量(㎥/s)',
         data: filtered.map(d => parseFloat(d.flow)),
         borderColor: '#28a745',
         backgroundColor: 'rgba(40,167,69,0.1)',

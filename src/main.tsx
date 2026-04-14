@@ -8,7 +8,8 @@ import ErrorBoundary from './components/ErrorBoundary.tsx'
 // Service Worker 登録（PWA）
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/genba-react/sw.js')
+    const base = import.meta.env.BASE_URL
+    navigator.serviceWorker.register(`${base}sw.js`)
   })
 }
 

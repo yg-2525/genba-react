@@ -589,6 +589,26 @@ button:active {
   color: var(--text);
 }
 
+/* ===== インストールバナー ===== */
+.install-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--accent-bg), #ede9fe);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.install-banner-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
 /* ===== データ同期 ===== */
 .sync-panel {
   margin-top: 16px;
@@ -699,6 +719,16 @@ button:active {
   height: 18px;
   accent-color: var(--accent);
   cursor: pointer;
+}
+
+/* 削除アニメーション */
+.data-list li {
+  transition: border-color 0.2s, box-shadow 0.2s, opacity 0.3s, transform 0.3s;
+}
+
+.data-list li.removing {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 
 .data-list {
@@ -987,6 +1017,10 @@ button:active {
   .app-grid-row {
     grid-template-columns: 1fr;
   }
+
+  .chart-wrapper {
+    height: 260px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -996,6 +1030,11 @@ button:active {
 
   .card {
     padding: 18px;
+  }
+
+  /* iOSズーム防止: font-size 16px未満だとSafariが自動ズームする */
+  input, select, textarea {
+    font-size: 16px;
   }
 
   .form-grid {

@@ -9,8 +9,16 @@ type Props = {
 const SYNC_URL = import.meta.env.VITE_SYNC_URL ?? ''
 const KEY_PATTERN = /^[a-zA-Z0-9_\-]{3,64}$/
 
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(password)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
 export default function SyncPanel({ dataList, onDownload }: Props) {
   const [syncKey, setSyncKey] = useState(() => localStorage.getItem('syncKey') ?? '')
+  const [syncPassword, setSyncPassword] = useState(() => localStorage.getItem('syncPassword') ?? '')
   const [status, setStatus] = useState('')
   const [statusType, setStatusType] = useState<'info' | 'success' | 'error'>('info')
   const [loading, setLoading] = useState(false)
@@ -19,6 +27,10 @@ export default function SyncPanel({ dataList, onDownload }: Props) {
   useEffect(() => {
     localStorage.setItem('syncKey', syncKey)
   }, [syncKey])
+
+  useEffect(() => {
+    localStorage.setItem('syncPassword', syncPassword)
+  }, [syncPassword])
 
   if (!SYNC_URL) return null
 
@@ -38,9 +50,13 @@ export default function SyncPanel({ dataList, onDownload }: Props) {
     }
     setLoading(true)
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (syncPassword) {
+        headers['X-Sync-Password'] = await hashPassword(syncPassword)
+      }
       const res = await fetch(`${SYNC_URL}/sync/${encodeURIComponent(syncKey)}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ dataList }),
       })
       const data = await res.json()
@@ -66,7 +82,11 @@ export default function SyncPanel({ dataList, onDownload }: Props) {
     }
     setLoading(true)
     try {
-      const res = await fetch(`${SYNC_URL}/sync/${encodeURIComponent(syncKey)}`)
+      const headers: Record<string, string> = {}
+      if (syncPassword) {
+        headers['X-Sync-Password'] = await hashPassword(syncPassword)
+      }
+      const res = await fetch(`${SYNC_URL}/sync/${encodeURIComponent(syncKey)}`, { headers })
       const data = await res.json()
       if (!res.ok) {
         showStatus(data.error ?? 'ダウンロード失敗', 'error')
@@ -104,6 +124,19 @@ export default function SyncPanel({ dataList, onDownload }: Props) {
           placeholder="例: kawaguchi-2026"
           maxLength={64}
           disabled={loading}
+        />
+      </div>
+      <div className="sync-key-row">
+        <label htmlFor="sync-password">パスワード</label>
+        <input
+          id="sync-password"
+          type="password"
+          value={syncPassword}
+          onChange={e => setSyncPassword(e.target.value)}
+          placeholder="任意（設定すると上書き保護）"
+          maxLength={64}
+          disabled={loading}
+          autoComplete="off"
         />
       </div>
       <div className="sync-actions">

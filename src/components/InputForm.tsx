@@ -116,17 +116,50 @@ export default function InputForm({ onAdd }: Props) {
         showToast('水位を取得しました', 'success')
       } else {
         const waterLevel = await fetchWaterLevelBySiteDate(form.name, form.date)
-        setForm(prev => ({
-          ...prev,
-          startWaterLevel: waterLevel.toFixed(2),
-          endWaterLevel: waterLevel.toFixed(2),
-        }))
-        showToast('水位を取得しました', 'success')
+        if (waterLevel === '閉局' || waterLevel === '欠測') {
+          setForm(prev => ({
+            ...prev,
+            startWaterLevel: waterLevel,
+            endWaterLevel: waterLevel,
+          }))
+          showToast(`この観測所は現在「${waterLevel}」です`, 'info')
+        } else if (waterLevel !== null && typeof waterLevel === 'number') {
+          setForm(prev => ({
+            ...prev,
+            startWaterLevel: waterLevel.toFixed(2),
+            endWaterLevel: waterLevel.toFixed(2),
+          }))
+          showToast('水位を取得しました', 'success')
+        } else {
+          showToast('水位データが見つかりません', 'error')
+        }
       }
     } catch (error) {
-      const safeMessages = ['水位データが見つかりません', '観測所が見つかりません', '現場名と日付を入力してから水位を取得してください']
       const raw = error instanceof Error ? error.message : ''
-      const message = safeMessages.find(m => raw.includes(m)) ?? '水位の取得に失敗しました'
+
+      // 閉局・欠測 → 水位欄にそのまま表示
+      const closedPatterns = ['閉局', '欠測']
+      const closedLabel = closedPatterns.find(p => raw.includes(p))
+      if (closedLabel) {
+        setForm(prev => ({
+          ...prev,
+          startWaterLevel: closedLabel,
+          endWaterLevel: closedLabel,
+        }))
+        showToast(`この観測所は現在「${closedLabel}」です`, 'info')
+        return
+      }
+
+      const safeMessages = [
+        '水位データが見つかりません',
+        '観測所が見つかりません',
+        '現場名と日付を入力してから水位を取得してください',
+        '観測所名は1〜100文字で入力してください',
+      ]
+      const message = safeMessages.find(m => raw.includes(m))
+        ?? (raw.includes('Failed to fetch') || raw.includes('NetworkError')
+          ? '通信エラー: ネットワーク接続を確認してください'
+          : '水位の取得に失敗しました')
       showToast(message, 'error')
     } finally {
       setIsFetchingWaterLevel(false)

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { GembaData } from '../types'
 import { useToast } from '../contexts/ToastContext'
+import ModalShell from './ModalShell'
 
 type Props = {
   data1: GembaData
@@ -23,7 +24,7 @@ export default function CompareModal({ data1, data2, onSaveNotes, onClose }: Pro
 
   return (
     <div className="modal-overlay" role="presentation" onClick={onClose}>
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="compare-modal-title" onClick={e => e.stopPropagation()}>
+      <ModalShell onClose={onClose} ariaLabelledBy="compare-modal-title">
         <h2 id="compare-modal-title">比較結果</h2>
         <table className="compare-table">
           <thead>
@@ -71,7 +72,7 @@ export default function CompareModal({ data1, data2, onSaveNotes, onClose }: Pro
           <button className="btn-primary" onClick={handleSave}>メモを保存</button>
           <button className="btn-secondary" onClick={onClose}>閉じる</button>
         </div>
-      </div>
+      </ModalShell>
     </div>
   )
 }

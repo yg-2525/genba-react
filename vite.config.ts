@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/genba-react/',
+  base: process.env.CF_PAGES ? '/' : '/genba-react/',
   plugins: [react()],
   server: {
     proxy: {

@@ -8,6 +8,7 @@ import ChartView from './components/ChartView'
 import EditModal from './components/EditModal'
 import CompareModal from './components/CompareModal'
 import SyncPanel from './components/SyncPanel'
+import InstallBanner from './components/InstallBanner'
 import { useToast } from './contexts/ToastContext'
 import './App.css'
 
@@ -41,7 +42,11 @@ function App() {
 
   // localStorage 保存
   useEffect(() => {
-    localStorage.setItem('genbaData', JSON.stringify(dataList))
+    try {
+      localStorage.setItem('genbaData', JSON.stringify(dataList))
+    } catch {
+      showToast('ローカルストレージが満杯です。古いデータを削除してください', 'error')
+    }
   }, [dataList])
 
   // フィルター
@@ -143,6 +148,8 @@ function App() {
         <h1>現場観測管理システム</h1>
         <p className="app-description">本アプリは流量観測業務における記録・計算・比較を目的として作成しました</p>
       </header>
+
+      <InstallBanner />
 
       <SyncPanel dataList={dataList} onDownload={data => setDataList(data)} />
 

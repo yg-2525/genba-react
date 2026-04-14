@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import type { GembaData } from '../types'
 import useIsMobile from '../hooks/useIsMobile'
 import { formatDateForDisplay } from '../utils/date'
@@ -24,18 +24,24 @@ export default function DataList({
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [bulkMode, setBulkMode] = useState(false)
   const [confirmBulk, setConfirmBulk] = useState(false)
+  const [removingId, setRemovingId] = useState<number | null>(null)
   const isMobile = useIsMobile()
 
   function handleDeleteClick(index: number) {
     setConfirmIndex(index)
   }
 
-  function handleConfirmDelete() {
-    if (confirmIndex !== null) {
+  const handleConfirmDelete = useCallback(() => {
+    if (confirmIndex === null) return
+    const item = filteredList[confirmIndex]
+    if (!item) return
+    setRemovingId(item.id)
+    setTimeout(() => {
       onDelete(confirmIndex)
       setConfirmIndex(null)
-    }
-  }
+      setRemovingId(null)
+    }, 300)
+  }, [confirmIndex, filteredList, onDelete])
 
   function toggleSelect(id: number) {
     setSelectedIds(prev => {
@@ -104,7 +110,7 @@ export default function DataList({
       ) : (
         <ul className="data-list">
           {filteredList.map((data, index) => (
-            <li key={data.id} className={compareFirstIndex === index ? 'selected' : ''}>
+            <li key={data.id} className={`${compareFirstIndex === index ? 'selected' : ''}${removingId === data.id ? ' removing' : ''}`}>
               {bulkMode && (
                 <label className="bulk-checkbox">
                   <input

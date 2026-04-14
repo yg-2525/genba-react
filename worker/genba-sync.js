@@ -17,7 +17,10 @@
  * 制限: 1キーあたり最大 1MB、KV 無料枠 100,000 reads/day, 1,000 writes/day
  */
 
-const ALLOWED_ORIGIN = 'https://yg-2525.github.io'
+const ALLOWED_ORIGINS = [
+  'https://yg-2525.github.io',
+  'https://genba-react.pages.dev',
+]
 const MAX_BODY_SIZE = 1024 * 1024 // 1MB
 const KEY_PATTERN = /^[a-zA-Z0-9_\-]{3,64}$/
 
@@ -49,7 +52,7 @@ export default {
       case 'PUT':
         return handlePut(request, env, key, origin)
       case 'GET':
-        return handleGet(env, key, origin)
+        return handleGet(env, key, origin, request)
       default:
         return jsonResponse(405, { error: 'Method not allowed' }, origin)
     }
@@ -80,9 +83,24 @@ async function handlePut(request, env, key, origin) {
     return jsonResponse(413, { error: 'データサイズが上限(1MB)を超えています' }, origin)
   }
 
+  // パスワード検証: 既存データにパスワードが設定されている場合は一致チェック
+  const passwordHash = (request.headers.get('X-Sync-Password') ?? '').trim()
+  const existing = await env.GENBA_SYNC.get(`sync:${key}`)
+  if (existing) {
+    try {
+      const prev = JSON.parse(existing)
+      if (prev.passwordHash && prev.passwordHash !== passwordHash) {
+        return jsonResponse(403, { error: 'パスワードが一致しません' }, origin)
+      }
+    } catch {
+      // 既存データ破損 — 上書き許可
+    }
+  }
+
   const payload = {
     dataList: body.dataList,
     updatedAt: new Date().toISOString(),
+    ...(passwordHash ? { passwordHash } : {}),
   }
 
   // KV に保存（TTL なし = 無期限保存、過年度比較にも対応）
@@ -91,7 +109,7 @@ async function handlePut(request, env, key, origin) {
   return jsonResponse(200, { ok: true, updatedAt: payload.updatedAt, count: body.dataList.length }, origin)
 }
 
-async function handleGet(env, key, origin) {
+async function handleGet(env, key, origin, request) {
   const raw = await env.GENBA_SYNC.get(`sync:${key}`)
   if (!raw) {
     return jsonResponse(404, { error: 'この業務IDのデータはまだありません' }, origin)
@@ -104,7 +122,17 @@ async function handleGet(env, key, origin) {
     return jsonResponse(500, { error: 'データの読み込みに失敗しました' }, origin)
   }
 
-  return jsonResponse(200, data, origin)
+  // パスワード検証
+  if (data.passwordHash) {
+    const passwordHash = (request.headers.get('X-Sync-Password') ?? '').trim()
+    if (data.passwordHash !== passwordHash) {
+      return jsonResponse(403, { error: 'パスワードが一致しません' }, origin)
+    }
+  }
+
+  // passwordHash をクライアントに返さない
+  const { passwordHash: _, ...safeData } = data
+  return jsonResponse(200, safeData, origin)
 }
 
 function jsonResponse(status, body, origin) {
@@ -119,14 +147,14 @@ function jsonResponse(status, body, origin) {
 
 function corsHeaders(origin) {
   const allowed =
-    origin === ALLOWED_ORIGIN ||
+    ALLOWED_ORIGINS.includes(origin) ||
     origin.startsWith('http://localhost:') ||
     origin.startsWith('http://127.0.0.1:')
 
   return {
-    'Access-Control-Allow-Origin': allowed ? origin : ALLOWED_ORIGIN,
+    'Access-Control-Allow-Origin': allowed ? origin : ALLOWED_ORIGINS[0],
     'Access-Control-Allow-Methods': 'GET, PUT, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Sync-Password',
     'Access-Control-Max-Age': '86400',
   }
 }

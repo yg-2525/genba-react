@@ -3,6 +3,7 @@ import type { GembaData } from '../types'
 import { useToast } from '../contexts/ToastContext'
 import ObservationCalculator from './ObservationCalculator'
 import ResponsiveDateInput from './ResponsiveDateInput'
+import ModalShell from './ModalShell'
 
 type FormState = {
   name: string
@@ -75,7 +76,7 @@ export default function EditModal({ data, onSave, onCancel }: Props) {
 
   return (
     <div className="modal-overlay" role="presentation" onClick={onCancel}>
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title" onClick={e => e.stopPropagation()}>
+      <ModalShell onClose={onCancel} ariaLabelledBy="edit-modal-title">
         <h2 id="edit-modal-title">データ編集</h2>
         <div className="form-grid">
           <input
@@ -145,7 +146,7 @@ export default function EditModal({ data, onSave, onCancel }: Props) {
           <button className="btn-primary" onClick={handleSave}>保存</button>
           <button className="btn-secondary" onClick={onCancel}>キャンセル</button>
         </div>
-      </div>
+      </ModalShell>
     </div>
   )
 }

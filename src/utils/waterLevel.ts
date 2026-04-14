@@ -1,3 +1,33 @@
+/* ===== 水位キャッシュ (sessionStorage) ===== */
+const CACHE_PREFIX = 'wl_cache:'
+const CACHE_TTL_MS = 10 * 60 * 1000 // 10分
+
+function getCached<T>(key: string): T | null {
+  try {
+    const raw = sessionStorage.getItem(CACHE_PREFIX + key)
+    if (!raw) return null
+    const { value, expires } = JSON.parse(raw) as { value: T; expires: number }
+    if (Date.now() > expires) {
+      sessionStorage.removeItem(CACHE_PREFIX + key)
+      return null
+    }
+    return value
+  } catch {
+    return null
+  }
+}
+
+function setCache<T>(key: string, value: T) {
+  try {
+    sessionStorage.setItem(
+      CACHE_PREFIX + key,
+      JSON.stringify({ value, expires: Date.now() + CACHE_TTL_MS }),
+    )
+  } catch {
+    // sessionStorage full — ignore
+  }
+}
+
 type WaterLevelApiResponse = {
   waterLevel: number | string
 }
@@ -26,9 +56,38 @@ type RiverSearchResponse = {
 }
 
 type RiverLevelResponse = {
+  dspFlg?: number
   obsValue?: {
     stg?: number | string | null
+    stgCcd?: number
   }
+}
+
+/** 閉局・欠測を表す文字列パターン */
+const CLOSED_PATTERNS = ['閉局', '欠測', '--']
+
+
+
+
+
+/**
+ * stg 値を水位としてパース。
+ * - 数値 → そのまま返す
+ * - 「閉局」「欠測」等 → その文字列を返す（UI 表示用）
+ * - null / undefined / 空文字 → null を返す
+ * Number(null)=0, Number('')=0 の JS 罠を回避する。
+ */
+function parseStgValue(stg: number | string | null | undefined): number | string | null {
+  if (stg === null || stg === undefined) return null
+  if (typeof stg === 'string') {
+    const trimmed = stg.trim()
+    if (!trimmed || trimmed === '-') return null
+    // 閉局・欠測等の状態文字列はそのまま返す
+    if (CLOSED_PATTERNS.some(p => trimmed.includes(p))) return trimmed
+    const value = Number(trimmed)
+    return Number.isFinite(value) ? value : null
+  }
+  return Number.isFinite(stg) ? stg : null
 }
 
 const WATER_LEVEL_SOURCE_URL = (() => {
@@ -202,13 +261,17 @@ async function fetchWaterLevelDirectly(siteName: string, dateTime: string) {
     }
 
     const levelData = (await levelResponse.json()) as RiverLevelResponse
-    const waterLevel = Number(levelData.obsValue?.stg)
-    if (Number.isFinite(waterLevel)) {
-      return waterLevel
+    const parsed = parseStgValue(levelData.obsValue?.stg)
+    // 閉局・欠測等の状態文字列 → そのまま返す
+    if (typeof parsed === 'string') {
+      return parsed
+    }
+    if (parsed !== null) {
+      return parsed
     }
   }
 
-  throw new Error('指定日時付近の水位データが見つかりませんでした')
+  return null
 }
 
 async function fetchStationByName(siteName: string) {
@@ -236,11 +299,26 @@ async function fetchWaterLevelByStationAndTimeKey(obsFcd: string, dateKey: strin
   }
 
   const levelData = (await levelResponse.json()) as RiverLevelResponse
-  const waterLevel = Number(levelData.obsValue?.stg)
-  return Number.isFinite(waterLevel) ? waterLevel : null
+    // 閉局判定ロジックは撤廃
+  return parseStgValue(levelData.obsValue?.stg)
 }
 
 export async function fetchAverageWaterLevelBySiteDateRange(
+  siteName: string,
+  date: string,
+  startTime: string,
+  endTime: string,
+): Promise<WaterLevelDetail> {
+  const cacheKey = `range:${siteName}:${date}:${startTime}:${endTime}`
+  const cached = getCached<WaterLevelDetail>(cacheKey)
+  if (cached !== null) return cached
+
+  const result = await fetchAverageWaterLevelBySiteDateRangeInner(siteName, date, startTime, endTime)
+  setCache(cacheKey, result)
+  return result
+}
+
+async function fetchAverageWaterLevelBySiteDateRangeInner(
   siteName: string,
   date: string,
   startTime: string,
@@ -263,6 +341,10 @@ export async function fetchAverageWaterLevelBySiteDateRange(
     const values: number[] = []
     for (const timeKey of rangeKeys) {
       const value = await fetchWaterLevelByStationAndTimeKey(obsFcd, dateKey, timeKey)
+      // 閉局・欠測等の状態文字列 → エラーとして投げる
+      if (typeof value === 'string') {
+        throw new Error(value)
+      }
       if (value !== null) {
         values.push(value)
       }
@@ -278,7 +360,7 @@ export async function fetchAverageWaterLevelBySiteDateRange(
     }
 
     if (!WATER_LEVEL_API_URL) {
-      throw new Error('指定時間帯の水位データが見つかりませんでした')
+      throw new Error('指定時間帯の水位データが見つかりませんでした（閉局・欠測の可能性があります）')
     }
   }
 
@@ -308,6 +390,16 @@ export async function fetchAverageWaterLevelBySiteDateRange(
 }
 
 export async function fetchWaterLevelBySiteDate(siteName: string, dateTime: string) {
+  const cacheKey = `single:${siteName}:${dateTime}`
+  const cached = getCached<number>(cacheKey)
+  if (cached !== null) return cached
+
+  const result = await fetchWaterLevelBySiteDateInner(siteName, dateTime)
+  setCache(cacheKey, result)
+  return result
+}
+
+async function fetchWaterLevelBySiteDateInner(siteName: string, dateTime: string) {
   if (USE_DIRECT_RIVER_API) {
     try {
       return await fetchWaterLevelDirectly(siteName, dateTime)
