@@ -2,26 +2,36 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
+    <!-- viewport はモバイル対応の基本なので、最優先で修正 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="manifest" href="/genba-react/manifest.json" />
+    <link rel="manifest" href="manifest.json" />
+    <!-- theme-color はサイトのブランドカラーに合わせる -->
     <meta name="theme-color" content="#7c3aed" />
-    <link rel="apple-touch-icon" href="/genba-react/icon-192.svg" />
-    <meta name="viewport" content="width=1024" />
+    <!-- apple-touch-icon は PNG も用意するとより確実 -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="description" content="流量観測業務における記録・計算・比較を支援するWebアプリ。音数・秒数からの流速計算、断面積・流量の自動算出、データ管理・CSV出力に対応。" />
     <meta property="og:title" content="現場観測管理システム" />
     <meta property="og:description" content="流量観測の記録・計算・比較を支援するWebアプリ" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://yg-2525.github.io/genba-react/" />
+    <!-- canonical と og:url を公開URLに統一 -->
+    <meta property="og:url" content="https://genba-react.pages.dev/" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="現場観測管理システム" />
     <meta name="twitter:description" content="流量観測の記録・計算・比較を支援するWebアプリ" />
-    <link rel="canonical" href="https://yg-2525.github.io/genba-react/" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.river.go.jp https://river-proxy.yg-nakamachi-genba.workers.dev https://genba-sync.yg-nakamachi-genba.workers.dev; img-src 'self' data:; font-src 'self';" />
+    <!-- og:image を追加（SNSシェア時のカード画像） -->
+    <meta property="og:image" content="https://yg-2525.github.io/genba-react/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <link rel="canonical" href="https://genba-react.pages.dev/" />
+    <!-- CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy は、可能であればサーバーのHTTPヘッダで設定することを推奨 -->
+    <!-- meta で設定する場合の例（style-src 'unsafe-inline' はリスクがあるので注意） -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.river.go.jp https://river-proxy.yg-nakamachi-genba.workers.dev https://genba-sync.yg-nakamachi-genba.workers.dev; img-src 'self' data: https:; font-src 'self';" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()" />
     <title>現場観測管理システム</title>
-  </head>
+</head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
