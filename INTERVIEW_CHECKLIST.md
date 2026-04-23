@@ -13,7 +13,7 @@
 ## ✅ 本番直前（面接 2 時間前）
 
 ### コード確認
-- [ ] GitHub Pages で https://yg-2525.github.io/genba-react/ が正常に動作
+- [ ] Cloudflare Pages で https://genba-react.pages.dev/ が正常に動作
 - [ ] ブラウザの DevTools（F12）で console エラーがないか確認
 - [ ] localStorage に test data が残っていたら削除
 - [ ] `npm test -- --run` で全テスト PASS を確認
@@ -75,8 +75,8 @@
 5. test/ フォルダを示す
    「34 テスト、全部 PASS しています」
 
-6. GitHub Pages にアクセス
-   「実装後、npm run deploy で自動デプロイしてます」
+6. Cloudflare Pages にアクセス
+   「mainブランチにpushすると自動でCloudflare Pagesにデプロイされます」
 ```
 
 ### **この質問がきたら必殺技**
@@ -247,12 +247,12 @@ A：「MVP（最小実行可能製品）として。応用範囲：
 https://github.com/yg-2525/genba-react
 
 【ライブデモ】
-https://yg-2525.github.io/genba-react/
+https://genba-react.pages.dev/
 
 【Technical Details】
 - React 19.2.4 + TypeScript 5.9.3
 - 34 unit/integration tests（全 PASS）
-- GitHub Pages でのデプロイ自動化
+- Cloudflare Pages でのデプロイ自動化
 
 ご質問やご指摘がございましたら、
 修正・改善させていただきますので、

@@ -30,20 +30,25 @@ function calcInstrumentDepth(depthStr: string): string {
   return (d * 0.6).toFixed(2)
 }
 
+
 export default function ObservationCalculator({ onApply, resetRef }: Props) {
   const [settings, setSettings] = useState(defaultSettings)
-  const [rows, setRows] = useState<ObservationInputRow[]>([
-    createObservationRow(),
-    createObservationRow(),
-    createObservationRow(),
+  // 1行目: 水深入力、2行目: 2割/8割用
+  const [mainRow, setMainRow] = useState<ObservationInputRow>(createObservationRow())
+  const [subRows, setSubRows] = useState<ObservationInputRow[]>([
+    { ...createObservationRow(), id: '0.2', distance: '', depth: '', count: '', seconds1: '', seconds2: '' },
+    { ...createObservationRow(), id: '0.8', distance: '', depth: '', count: '', seconds1: '', seconds2: '' },
   ])
 
   function resetCalculator() {
     setSettings(defaultSettings)
-    setRows([createObservationRow(), createObservationRow(), createObservationRow()])
+    setMainRow(createObservationRow())
+    setSubRows([
+      { ...createObservationRow(), id: '0.2', distance: '', depth: '', count: '', seconds1: '', seconds2: '' },
+      { ...createObservationRow(), id: '0.8', distance: '', depth: '', count: '', seconds1: '', seconds2: '' },
+    ])
   }
 
-  // Expose reset to parent for bulk reset
   if (resetRef) resetRef.current = resetCalculator
 
   const numericSettings = useMemo<CalculationSettings>(() => ({
@@ -52,14 +57,26 @@ export default function ObservationCalculator({ onApply, resetRef }: Props) {
     pulseFactor: Number(settings.pulseFactor) || 0,
   }), [settings])
 
-  const summary = useMemo(() => calculateObservationSummary(rows, numericSettings), [rows, numericSettings])
+  // 水深判定
+  const depthNum = Number(mainRow.depth)
+  const isTwoStage = !isNaN(depthNum) && depthNum >= 0.5
 
-  function updateRow(id: string, key: keyof ObservationInputRow, value: string) {
-    setRows(prev => prev.map(row => row.id === id ? { ...row, [key]: value } : row))
+  // 表示用行
+  const displayRows = isTwoStage
+    ? subRows.map((row, idx) => ({
+        ...row,
+        depth: (depthNum * (idx === 0 ? 0.2 : 0.8)).toFixed(2),
+      }))
+    : [{ ...mainRow, depth: (depthNum * 0.6).toFixed(2) }]
+
+  const summary = useMemo(() => calculateObservationSummary(displayRows, numericSettings), [displayRows, numericSettings])
+
+  // 入力ハンドラ
+  function handleMainRowChange(key: keyof ObservationInputRow, value: string) {
+    setMainRow(prev => ({ ...prev, [key]: value }))
   }
-
-  function removeRow(id: string) {
-    setRows(prev => prev.length <= 2 ? prev : prev.filter(row => row.id !== id))
+  function handleSubRowChange(idx: number, key: keyof ObservationInputRow, value: string) {
+    setSubRows(prev => prev.map((row, i) => i === idx ? { ...row, [key]: value } : row))
   }
 
   return (
@@ -109,6 +126,7 @@ export default function ObservationCalculator({ onApply, resetRef }: Props) {
         </div>
       </div>
 
+
       <div className="observation-grid observation-grid-header">
         <span>距離(m)</span>
         <span>水深(m)</span>
@@ -116,48 +134,92 @@ export default function ObservationCalculator({ onApply, resetRef }: Props) {
         <span>音数</span>
         <span>秒数1</span>
         <span>秒数2</span>
-        <span>操作</span>
       </div>
 
-      {rows.map(row => (
-        <div key={row.id} className="observation-grid">
+      {/* 入力欄 */}
+      {!isTwoStage ? (
+        <div className="observation-grid">
           <input
             type="text"
-            value={row.distance}
+            value={mainRow.distance}
             placeholder="距離 / P"
-            onChange={event => updateRow(row.id, 'distance', event.target.value)}
+            onChange={e => handleMainRowChange('distance', e.target.value)}
           />
-          <input type="number" step="any" value={row.depth} placeholder="水深" onChange={event => updateRow(row.id, 'depth', event.target.value)} />
-          <span className="instrument-depth-cell">{calcInstrumentDepth(row.depth)}</span>
           <input
             type="number"
             step="any"
-            value={row.count}
+            value={mainRow.depth}
+            placeholder="水深"
+            onChange={e => handleMainRowChange('depth', e.target.value)}
+          />
+          <span className="instrument-depth-cell">{calcInstrumentDepth(mainRow.depth)}</span>
+          <input
+            type="number"
+            step="any"
+            value={mainRow.count}
             placeholder="音数"
-            onChange={event => updateRow(row.id, 'count', event.target.value)}
+            onChange={e => handleMainRowChange('count', e.target.value)}
           />
           <input
             type="number"
             step="any"
-            value={row.seconds1}
+            value={mainRow.seconds1}
             placeholder="秒数1"
-            onChange={event => updateRow(row.id, 'seconds1', event.target.value)}
+            onChange={e => handleMainRowChange('seconds1', e.target.value)}
           />
           <input
             type="number"
             step="any"
-            value={row.seconds2}
+            value={mainRow.seconds2}
             placeholder="秒数2"
-            onChange={event => updateRow(row.id, 'seconds2', event.target.value)}
+            onChange={e => handleMainRowChange('seconds2', e.target.value)}
           />
-          <button type="button" className="btn-secondary observation-row-remove" onClick={() => removeRow(row.id)}>行削除</button>
         </div>
-      ))}
+      ) : (
+        <>
+          {subRows.map((row, idx) => (
+            <div key={row.id} className="observation-grid">
+              <input
+                type="text"
+                value={mainRow.distance}
+                placeholder="距離 / P"
+                readOnly
+              />
+              <input
+                type="number"
+                step="any"
+                value={mainRow.depth}
+                placeholder="水深"
+                readOnly
+              />
+              <span className="instrument-depth-cell">{idx === 0 ? '2割' : '8割'}<br />{(depthNum * (idx === 0 ? 0.2 : 0.8)).toFixed(2)}</span>
+              <input
+                type="number"
+                step="any"
+                value={row.count}
+                placeholder="音数"
+                onChange={e => handleSubRowChange(idx, 'count', e.target.value)}
+              />
+              <input
+                type="number"
+                step="any"
+                value={row.seconds1}
+                placeholder="秒数1"
+                onChange={e => handleSubRowChange(idx, 'seconds1', e.target.value)}
+              />
+              <input
+                type="number"
+                step="any"
+                value={row.seconds2}
+                placeholder="秒数2"
+                onChange={e => handleSubRowChange(idx, 'seconds2', e.target.value)}
+              />
+            </div>
+          ))}
+        </>
+      )}
 
       <div className="calculator-actions">
-        <button type="button" className="btn-secondary" onClick={() => setRows(prev => [...prev, createObservationRow()])}>
-          行を追加
-        </button>
         <button
           type="button"
           className="btn-primary"

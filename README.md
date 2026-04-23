@@ -3,9 +3,10 @@
 ![Tests](https://img.shields.io/badge/tests-34%20passed-brightgreen)
 ![Coverage](https://img.shields.io/badge/coverage-47%25-yellow)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Deploy](https://img.shields.io/badge/deploy-GitHub%20Pages-purple)
+![Deploy](https://img.shields.io/badge/deploy-Cloudflare%20Pages-orange)
 
-> **[デモサイト](https://yg-2525.github.io/genba-react/)** | **[リポジトリ](https://github.com/yg-2525/genba-react)**
+
+> **[デモサイト](https://genba-react.pages.dev/)** | **[リポジトリ](https://github.com/yg-2525/genba-react)**
 
 土木・測量現場での流量観測データ（水位・流速・断面積）を記録・計算・管理する Web アプリです。
 
@@ -31,7 +32,7 @@
 | Chart.js | 観測データのグラフ表示 |
 | Vitest | ユニットテスト（34 テスト） |
 | Cloudflare Workers | CORS プロキシ（水位 API 用） |
-| GitHub Pages | ホスティング |
+| Cloudflare Pages | ホスティング |
 | PWA (Service Worker) | オフライン対応 |
 | localStorage | データ永続化（バックエンドなし） |
 
@@ -112,12 +113,14 @@ npm test -- --run          # テスト実行
 npm test -- --run --coverage  # カバレッジ付き
 ```
 
+
 ## デプロイ
 
-```bash
-npm run build
-npx gh-pages -d dist
-```
+Cloudflare PagesとGitHubリポジトリを連携し、mainブランチにpushするだけで自動デプロイされます。
+
+1. `npm run build` でビルド（ローカル確認用）
+2. `git add . && git commit -m "update" && git push` でmainブランチにpush
+3. Cloudflare Pagesが自動で https://genba-react.pages.dev/ にデプロイ
 
 ## ライセンス
 
@@ -125,8 +128,4 @@ MIT
 
 ブラウザで `http://localhost:5173` を開いてください。
 
-## デプロイ
 
-```bash
-npm run deploy      # GitHub Pages にデプロイ
-```
